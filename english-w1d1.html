@@ -1,0 +1,519 @@
+<!--
+  TEMPLATE trang luyện tập tiếng Anh hàng ngày (bản nâng cấp).
+  CÁCH DÙNG: copy file này, CHỈ sửa object `lessonData` trong <script>
+  (đánh dấu rõ vùng "SỬA Ở ĐÂY"). Không cần sửa CSS/logic phía dưới.
+
+  Lưu trữ tiến trình dùng window.storage (key cố định "eng:...") để điểm/streak
+  được giữ lại xuyên suốt nhiều ngày, nhiều cuộc hội thoại khác nhau, miễn là
+  vẫn dùng đúng các key này ở mọi bản artifact được tạo ra sau.
+
+  Phát âm dùng Web Speech API (speechSynthesis) của trình duyệt — không cần
+  file âm thanh. Nếu trình duyệt không hỗ trợ, nút loa sẽ tự ẩn.
+-->
+<div id="eng-app"></div>
+<style>
+  #eng-app {
+    --bg: #fbf6ee;
+    --card: #fffaf2;
+    --ink: #4a3b30;
+    --ink-soft: #8a7a6a;
+    --accent: #d97a52;
+    --accent-soft: #f1c6a8;
+    --good: #7a9a6e;
+    --good-bg: rgba(122,154,110,0.12);
+    --bad: #c4654f;
+    --bad-bg: rgba(196,101,79,0.1);
+    --tip: #c79a3a;
+    --tip-bg: rgba(199,154,58,0.12);
+    --border: rgba(74,59,48,0.12);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: var(--ink);
+    background: linear-gradient(160deg, #fdf2e3 0%, #fbf6ee 60%, #f7ecdd 100%);
+    border-radius: 20px;
+    padding: 28px;
+    max-width: 760px;
+    margin: 0 auto;
+    box-sizing: border-box;
+  }
+  #eng-app * { box-sizing: border-box; }
+  .eng-header { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:20px; flex-wrap: wrap; }
+  .eng-title { font-size: 22px; font-weight: 700; margin: 0 0 4px; }
+  .eng-sub { color: var(--ink-soft); font-size: 14px; margin: 0; }
+  .eng-badge {
+    background: rgba(255,255,255,0.55); backdrop-filter: blur(8px);
+    border: 1px solid var(--border); border-radius: 14px;
+    padding: 10px 14px; font-size: 13px; text-align: right; min-width: 130px;
+  }
+  .eng-badge b { font-size: 18px; display:block; color: var(--accent); }
+  .eng-card {
+    background: rgba(255,255,255,0.6); backdrop-filter: blur(10px);
+    border: 1px solid var(--border); border-radius: 16px;
+    padding: 18px 20px; margin-bottom: 18px;
+    box-shadow: 0 4px 18px rgba(74,59,48,0.06);
+  }
+  .eng-section-title { font-size: 15px; font-weight: 700; margin: 0 0 12px; display:flex; align-items:center; gap:8px; }
+  .eng-section-sub { font-size: 12px; color: var(--ink-soft); margin: -6px 0 12px; }
+
+  .eng-flash-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+  .eng-flash {
+    position: relative; background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 10px; text-align: center; cursor: pointer;
+    min-height: 82px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    transition: transform 0.15s ease, border-color 0.15s ease; user-select: none;
+  }
+  .eng-flash:hover { transform: translateY(-2px); border-color: var(--accent-soft); }
+  .eng-flash .front { font-weight: 600; font-size: 14px; }
+  .eng-flash .ipa { font-size: 11px; color: var(--ink-soft); margin-top: 2px; }
+  .eng-flash .back { display:none; font-size: 12px; color: var(--ink-soft); margin-top:4px; }
+  .eng-flash.flipped .front { color: var(--accent); }
+  .eng-flash.flipped .back { display:block; }
+  .eng-example { font-size: 12px; color: var(--ink-soft); font-style: italic; margin-top: 2px; display:none; }
+  .eng-flash.flipped .eng-example { display:block; }
+  .eng-speak {
+    position:absolute; top:6px; right:6px; width:22px; height:22px; border-radius:50%;
+    border: none; background: rgba(217,122,82,0.12); color: var(--accent);
+    font-size: 12px; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  }
+  .eng-speak:hover { background: rgba(217,122,82,0.22); }
+
+  .eng-grammar-point { font-weight: 700; margin-bottom: 6px; }
+  .eng-grammar-ex { background: rgba(217,122,82,0.08); border-radius: 10px; padding: 8px 12px; margin-top: 8px; font-size: 14px; line-height:1.6; }
+  .eng-mistake { display:flex; gap:14px; flex-wrap:wrap; margin-top:12px; }
+  .eng-mistake-box { flex:1; min-width:200px; border-radius: 10px; padding: 10px 12px; font-size: 13px; }
+  .eng-mistake-box.wrong { background: var(--bad-bg); }
+  .eng-mistake-box.right { background: var(--good-bg); }
+  .eng-mistake-box b { display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:4px; }
+  .eng-mistake-box.wrong b { color: var(--bad); }
+  .eng-mistake-box.right b { color: var(--good); }
+  .eng-tip-box { margin-top: 10px; background: var(--tip-bg); border-radius: 10px; padding: 10px 12px; font-size: 13px; display:flex; gap:8px; }
+
+  .eng-dialogue-line { display:flex; gap:10px; margin-bottom: 12px; align-items:flex-start; }
+  .eng-dialogue-avatar {
+    width: 28px; height: 28px; border-radius: 50%; background: var(--accent-soft); color: var(--ink);
+    display:flex; align-items:center; justify-content:center; font-size: 12px; font-weight:700; flex-shrink:0;
+  }
+  .eng-dialogue-bubble { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 8px 12px; flex:1; }
+  .eng-dialogue-en { font-size: 14px; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+  .eng-dialogue-vi { font-size: 12px; color: var(--ink-soft); margin-top: 3px; display:none; }
+  .eng-dialogue-vi.show { display:block; }
+  .eng-toggle-vi { background:none; border:none; color: var(--accent); font-size:12px; cursor:pointer; text-decoration:underline; padding:0; margin-top:8px; }
+
+  .eng-ex-block { margin-bottom: 22px; }
+  .eng-ex-block:last-child { margin-bottom: 0; }
+  .eng-quiz-q { margin-bottom: 14px; }
+  .eng-quiz-q p { font-weight: 600; margin: 0 0 8px; font-size: 14px; }
+  .eng-opt {
+    display:block; width:100%; text-align:left; background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 9px 12px; margin-bottom: 6px; cursor:pointer; font-size: 14px; color: var(--ink);
+  }
+  .eng-opt:hover { border-color: var(--accent-soft); }
+  .eng-opt.selected { border-color: var(--accent); background: rgba(217,122,82,0.1); }
+  .eng-opt.correct { border-color: var(--good); background: var(--good-bg); }
+  .eng-opt.wrong { border-color: var(--bad); background: var(--bad-bg); }
+
+  .eng-fill-input {
+    border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; font-size: 14px;
+    width: 130px; background: var(--card); color: var(--ink); font-family: inherit;
+  }
+  .eng-fill-input.correct { border-color: var(--good); background: var(--good-bg); }
+  .eng-fill-input.wrong { border-color: var(--bad); background: var(--bad-bg); }
+  .eng-fill-hint { font-size: 11px; color: var(--ink-soft); margin-top: 4px; }
+
+  .eng-build-pool, .eng-build-answer {
+    display:flex; flex-wrap:wrap; gap:8px; min-height: 42px; padding: 8px;
+    border-radius: 10px; border: 1px dashed var(--border);
+  }
+  .eng-build-answer { background: rgba(255,255,255,0.4); margin-bottom: 8px; }
+  .eng-build-word {
+    background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+    padding: 6px 12px; font-size: 14px; cursor: pointer; user-select:none;
+  }
+  .eng-build-word:hover { border-color: var(--accent-soft); }
+  .eng-build-word.used { opacity: 0.35; cursor: default; }
+  .eng-build-result { font-size: 12px; margin-top: 6px; font-weight:600; }
+  .eng-build-result.correct { color: var(--good); }
+  .eng-build-result.wrong { color: var(--bad); }
+
+  .eng-btn {
+    background: var(--accent); color: white; border: none; border-radius: 12px;
+    padding: 11px 20px; font-size: 14px; font-weight: 600; cursor: pointer;
+  }
+  .eng-btn:hover { opacity: 0.92; }
+  .eng-btn.ghost { background: rgba(217,122,82,0.12); color: var(--accent); }
+  .eng-result { margin-top: 14px; padding: 14px; border-radius: 12px; background: var(--good-bg); font-size: 14px; display:none; font-weight:600; }
+  .eng-tip { font-size: 12px; color: var(--ink-soft); text-align:center; margin-top: 6px; }
+</style>
+<script>
+(function(){
+
+  // ============ SỬA Ở ĐÂY: nội dung bài học của 1 ngày ============
+  const lessonData = {
+    week: 1,
+    day: 1,
+    title: "Chào hỏi cơ bản",
+    titleEn: "Basic Greetings",
+
+    vocab: [
+      { en: "hello / hi", ipa: "/həˈloʊ/", vi: "xin chào", example: "Hello! How are you?" },
+      { en: "good morning", ipa: "/ɡʊd ˈmɔːrnɪŋ/", vi: "chào buổi sáng", example: "Good morning, everyone." },
+      { en: "good afternoon", ipa: "/ɡʊd ˌæftərˈnuːn/", vi: "chào buổi chiều", example: "Good afternoon, team." },
+      { en: "goodbye / bye", ipa: "/ɡʊdˈbaɪ/", vi: "tạm biệt", example: "Goodbye, see you tomorrow." },
+      { en: "name", ipa: "/neɪm/", vi: "tên", example: "My name is Long." },
+      { en: "nice to meet you", ipa: "/naɪs tə miːt juː/", vi: "rất vui được gặp bạn", example: "Nice to meet you too!" },
+      { en: "please", ipa: "/pliːz/", vi: "làm ơn / xin", example: "Please come in." },
+      { en: "thank you", ipa: "/θæŋk juː/", vi: "cảm ơn", example: "Thank you for your help." },
+      { en: "you're welcome", ipa: "/jʊr ˈwelkəm/", vi: "không có gì", example: "You're welcome, anytime." },
+      { en: "sorry", ipa: "/ˈsɒri/", vi: "xin lỗi", example: "Sorry, I'm late." },
+      { en: "yes / no", ipa: "/jes/ /noʊ/", vi: "có / không", example: "Yes, I am ready." },
+      { en: "developer", ipa: "/dɪˈveləpər/", vi: "lập trình viên", example: "I am a developer." },
+      { en: "laptop", ipa: "/ˈlæptɒp/", vi: "máy tính xách tay", example: "My laptop is new." },
+      { en: "keyboard", ipa: "/ˈkiːbɔːrd/", vi: "bàn phím", example: "This keyboard is mechanical." }
+    ],
+
+    grammar: {
+      point: "Động từ TO BE: am / is / are",
+      explanation: "TO BE nghĩa là 'là/thì'. Dùng 'am' với I, 'is' với he/she/it (số ít), 'are' với you/we/they (số nhiều).",
+      examples: ["I am a developer.", "She is happy.", "They are friends.", "My laptop is new."],
+      commonMistake: {
+        wrong: "I a developer.",
+        right: "I am a developer.",
+        note: "Trong tiếng Việt, câu 'Tôi lập trình viên' vẫn hiểu được dù thiếu 'là'. Nhưng tiếng Anh LUÔN cần am/is/are — bỏ quên là lỗi số 1 của người mới học."
+      },
+      memoryTip: "Mẹo nhớ nhanh: 'I-am, He/She/It-is, You/We/They-are' — đọc liền 3 cụm này như một câu vè cho đến khi phản xạ tự nhiên."
+    },
+
+    dialogue: {
+      titleVi: "Tình huống: gặp đồng nghiệp mới ở văn phòng",
+      lines: [
+        { speaker: "A", en: "Good morning! My name is Linh.", vi: "Chào buổi sáng! Tôi tên là Linh." },
+        { speaker: "B", en: "Hello Linh, nice to meet you. I am Tom.", vi: "Chào Linh, rất vui được gặp bạn. Tôi là Tom." },
+        { speaker: "A", en: "Are you a developer too?", vi: "Bạn cũng là lập trình viên à?" },
+        { speaker: "B", en: "Yes, I am. Thank you for asking!", vi: "Đúng vậy. Cảm ơn vì đã hỏi!" },
+        { speaker: "A", en: "You're welcome. See you later!", vi: "Không có gì. Hẹn gặp lại sau!" }
+      ]
+    },
+
+    exercises: {
+      multipleChoice: [
+        { q: "I ___ a developer.", options: ["am", "is", "are"], answer: "am" },
+        { q: "She ___ happy today.", options: ["am", "is", "are"], answer: "is" },
+        { q: "They ___ friends.", options: ["am", "is", "are"], answer: "are" }
+      ],
+      fillBlank: [
+        { sentence: "My laptop ___ new.", answer: "is", hint: "to be" },
+        { sentence: "We ___ developers.", answer: "are", hint: "to be" }
+      ],
+      sentenceBuild: [
+        { words: ["meet", "Nice", "to", "you"], answer: "Nice to meet you" },
+        { words: ["a", "I", "am", "developer"], answer: "I am a developer" }
+      ]
+    }
+  };
+  // ============ HẾT VÙNG SỬA ============
+
+  const KEY_STREAK = "eng:streak";
+  const KEY_DAYS = "eng:completed-days";
+  const KEY_SCORES = "eng:scores";
+  const dayId = `w${lessonData.week}d${lessonData.day}`;
+  const ttsOk = typeof window.speechSynthesis !== "undefined";
+
+  function speak(text) {
+    if (!ttsOk) return;
+    try {
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = "en-US";
+      u.rate = 0.92;
+      window.speechSynthesis.speak(u);
+    } catch (e) { /* ignore - some sandboxes block speech */ }
+  }
+
+  const app = document.getElementById("eng-app");
+
+  function speakBtn(text) {
+    return ttsOk ? `<button class="eng-speak" data-speak="${text.replace(/"/g, '&quot;')}" title="Nghe đọc">🔊</button>` : "";
+  }
+
+  function flashHtml(v, i) {
+    return `<div class="eng-flash" data-i="${i}">
+      ${speakBtn(v.en)}
+      <div class="front">${v.en}</div>
+      ${v.ipa ? `<div class="ipa">${v.ipa}</div>` : ""}
+      <div class="back">${v.vi}</div>
+      <div class="eng-example">"${v.example}"</div>
+    </div>`;
+  }
+
+  function dialogueHtml(d) {
+    return d.lines.map((line, i) => `
+      <div class="eng-dialogue-line">
+        <div class="eng-dialogue-avatar">${line.speaker}</div>
+        <div class="eng-dialogue-bubble">
+          <div class="eng-dialogue-en">${line.en} ${speakBtn(line.en)}</div>
+          <div class="eng-dialogue-vi" data-vi="${i}">${line.vi}</div>
+        </div>
+      </div>`).join("") + `<button class="eng-toggle-vi" id="eng-toggle-vi">Hiện nghĩa tiếng Việt</button>`;
+  }
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function normalize(s) {
+    return s.toLowerCase().replace(/[.?!,]/g, "").trim().replace(/\s+/g, " ");
+  }
+
+  function render(streak, completedCount) {
+    const ex = lessonData.exercises;
+
+    app.innerHTML = `
+      <div class="eng-header">
+        <div>
+          <p class="eng-title">Tuần ${lessonData.week} · Ngày ${lessonData.day}: ${lessonData.title}</p>
+          <p class="eng-sub">${lessonData.titleEn}</p>
+        </div>
+        <div class="eng-badge">Streak<b>${streak} 🔥</b>Đã học ${completedCount} buổi</div>
+      </div>
+
+      <div class="eng-card">
+        <p class="eng-section-title">📇 Từ vựng (bấm vào để lật, bấm 🔊 để nghe)</p>
+        <div class="eng-flash-grid">${lessonData.vocab.map(flashHtml).join("")}</div>
+      </div>
+
+      <div class="eng-card">
+        <p class="eng-section-title">📘 Ngữ pháp: ${lessonData.grammar.point}</p>
+        <p>${lessonData.grammar.explanation}</p>
+        <div class="eng-grammar-ex">${lessonData.grammar.examples.join("<br/>")}</div>
+        ${lessonData.grammar.commonMistake ? `
+        <div class="eng-mistake">
+          <div class="eng-mistake-box wrong"><b>❌ Sai thường gặp</b>${lessonData.grammar.commonMistake.wrong}</div>
+          <div class="eng-mistake-box right"><b>✅ Đúng</b>${lessonData.grammar.commonMistake.right}</div>
+        </div>
+        <p class="eng-section-sub" style="margin-top:8px;">${lessonData.grammar.commonMistake.note}</p>` : ""}
+        ${lessonData.grammar.memoryTip ? `<div class="eng-tip-box">💡 ${lessonData.grammar.memoryTip}</div>` : ""}
+      </div>
+
+      ${lessonData.dialogue ? `
+      <div class="eng-card">
+        <p class="eng-section-title">💬 Hội thoại mẫu</p>
+        <p class="eng-section-sub">${lessonData.dialogue.titleVi}</p>
+        ${dialogueHtml(lessonData.dialogue)}
+      </div>` : ""}
+
+      <div class="eng-card">
+        <p class="eng-section-title">✏️ Luyện tập</p>
+
+        ${ex.multipleChoice && ex.multipleChoice.length ? `
+        <div class="eng-ex-block">
+          <p class="eng-section-sub" style="margin-top:0;">Phần 1 · Trắc nghiệm</p>
+          <div id="eng-mc"></div>
+        </div>` : ""}
+
+        ${ex.fillBlank && ex.fillBlank.length ? `
+        <div class="eng-ex-block">
+          <p class="eng-section-sub">Phần 2 · Điền từ</p>
+          <div id="eng-fill"></div>
+        </div>` : ""}
+
+        ${ex.sentenceBuild && ex.sentenceBuild.length ? `
+        <div class="eng-ex-block">
+          <p class="eng-section-sub">Phần 3 · Sắp xếp câu (bấm các từ theo đúng thứ tự)</p>
+          <div id="eng-build"></div>
+        </div>` : ""}
+
+        <button class="eng-btn" id="eng-submit">Kiểm tra kết quả</button>
+        <div class="eng-result" id="eng-result"></div>
+      </div>
+
+      <p class="eng-tip">Học xong, quay lại chat và nói với Claude: "Hôm nay học tiếp ngày ${lessonData.day + 1}" để tiếp tục lộ trình.</p>
+    `;
+
+    // speaker buttons (flashcards + dialogue)
+    app.querySelectorAll("[data-speak]").forEach(btn => {
+      btn.addEventListener("click", (e) => { e.stopPropagation(); speak(btn.dataset.speak); });
+    });
+
+    // flashcard flip
+    app.querySelectorAll(".eng-flash").forEach(el => {
+      el.addEventListener("click", (e) => {
+        if (e.target.closest(".eng-speak")) return;
+        el.classList.toggle("flipped");
+      });
+    });
+
+    // dialogue VI toggle
+    const toggleBtn = document.getElementById("eng-toggle-vi");
+    if (toggleBtn) {
+      let shown = false;
+      toggleBtn.addEventListener("click", () => {
+        shown = !shown;
+        app.querySelectorAll(".eng-dialogue-vi").forEach(el => el.classList.toggle("show", shown));
+        toggleBtn.textContent = shown ? "Ẩn nghĩa tiếng Việt" : "Hiện nghĩa tiếng Việt";
+      });
+    }
+
+    // --- Multiple choice ---
+    const mcSelections = {};
+    const mcBox = document.getElementById("eng-mc");
+    if (mcBox) {
+      ex.multipleChoice.forEach((q, qi) => {
+        const block = document.createElement("div");
+        block.className = "eng-quiz-q";
+        block.innerHTML = `<p>${qi + 1}. ${q.q}</p>` +
+          q.options.map(opt => `<button class="eng-opt" data-qi="${qi}" data-opt="${opt}">${opt}</button>`).join("");
+        mcBox.appendChild(block);
+      });
+      mcBox.querySelectorAll(".eng-opt").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const qi = btn.dataset.qi;
+          mcBox.querySelectorAll(`.eng-opt[data-qi="${qi}"]`).forEach(b => b.classList.remove("selected"));
+          btn.classList.add("selected");
+          mcSelections[qi] = btn.dataset.opt;
+        });
+      });
+    }
+
+    // --- Fill blank ---
+    const fillBox = document.getElementById("eng-fill");
+    if (fillBox) {
+      ex.fillBlank.forEach((q, qi) => {
+        const [before, after] = q.sentence.split("___");
+        const block = document.createElement("div");
+        block.className = "eng-quiz-q";
+        block.innerHTML = `<p>${qi + 1}. ${before}<input class="eng-fill-input" data-qi="${qi}" type="text"/>${after || ""}</p>
+          <div class="eng-fill-hint">Gợi ý: ${q.hint}</div>`;
+        fillBox.appendChild(block);
+      });
+    }
+
+    // --- Sentence build ---
+    const buildBox = document.getElementById("eng-build");
+    const buildState = {};
+    if (buildBox) {
+      ex.sentenceBuild.forEach((q, qi) => {
+        const wrap = document.createElement("div");
+        wrap.className = "eng-quiz-q";
+        wrap.innerHTML = `<p>${qi + 1}. Sắp xếp thành câu đúng:</p>
+          <div class="eng-build-answer" id="eng-build-ans-${qi}"></div>
+          <div class="eng-build-pool" id="eng-build-pool-${qi}"></div>
+          <button class="eng-btn ghost" data-reset="${qi}" style="margin-top:6px; padding:6px 14px; font-size:12px;">Làm lại</button>
+          <div class="eng-build-result" id="eng-build-result-${qi}"></div>`;
+        buildBox.appendChild(wrap);
+        buildState[qi] = { order: shuffle(q.words.map((w, wi) => ({ w, wi }))), used: new Set() };
+        renderBuildPool(qi);
+      });
+
+      function renderBuildPool(qi) {
+        const pool = document.getElementById(`eng-build-pool-${qi}`);
+        const st = buildState[qi];
+        pool.innerHTML = st.order.map(item =>
+          `<span class="eng-build-word${st.used.has(item.wi) ? " used" : ""}" data-qi="${qi}" data-wi="${item.wi}">${item.w}</span>`
+        ).join("");
+        pool.querySelectorAll(".eng-build-word").forEach(el => {
+          el.addEventListener("click", () => {
+            if (el.classList.contains("used")) return;
+            st.used.add(Number(el.dataset.wi));
+            const ans = document.getElementById(`eng-build-ans-${qi}`);
+            const chip = document.createElement("span");
+            chip.className = "eng-build-word";
+            chip.textContent = el.textContent;
+            chip.dataset.wi = el.dataset.wi;
+            chip.addEventListener("click", () => {
+              st.used.delete(Number(chip.dataset.wi));
+              chip.remove();
+              renderBuildPool(qi);
+            });
+            ans.appendChild(chip);
+            renderBuildPool(qi);
+          });
+        });
+      }
+
+      buildBox.querySelectorAll("[data-reset]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const qi = btn.dataset.reset;
+          buildState[qi].used = new Set();
+          document.getElementById(`eng-build-ans-${qi}`).innerHTML = "";
+          document.getElementById(`eng-build-result-${qi}`).textContent = "";
+          renderBuildPool(qi);
+        });
+      });
+    }
+
+    // --- Submit / grade everything ---
+    document.getElementById("eng-submit").addEventListener("click", async () => {
+      let correct = 0, total = 0;
+
+      if (mcBox) {
+        ex.multipleChoice.forEach((q, qi) => {
+          total++;
+          const buttons = mcBox.querySelectorAll(`.eng-opt[data-qi="${qi}"]`);
+          buttons.forEach(b => {
+            if (b.dataset.opt === q.answer) b.classList.add("correct");
+            else if (b.dataset.opt === mcSelections[qi]) b.classList.add("wrong");
+          });
+          if (mcSelections[qi] === q.answer) correct++;
+        });
+      }
+
+      if (fillBox) {
+        ex.fillBlank.forEach((q, qi) => {
+          total++;
+          const input = fillBox.querySelector(`.eng-fill-input[data-qi="${qi}"]`);
+          const ok = normalize(input.value) === normalize(q.answer);
+          input.classList.add(ok ? "correct" : "wrong");
+          if (ok) correct++;
+        });
+      }
+
+      if (buildBox) {
+        ex.sentenceBuild.forEach((q, qi) => {
+          total++;
+          const ans = document.getElementById(`eng-build-ans-${qi}`);
+          const text = Array.from(ans.children).map(c => c.textContent).join(" ");
+          const ok = normalize(text) === normalize(q.answer);
+          const result = document.getElementById(`eng-build-result-${qi}`);
+          result.className = "eng-build-result " + (ok ? "correct" : "wrong");
+          result.textContent = ok ? "✅ Đúng rồi!" : `❌ Chưa đúng. Đáp án: "${q.answer}"`;
+          if (ok) correct++;
+        });
+      }
+
+      const resultBox = document.getElementById("eng-result");
+      resultBox.style.display = "block";
+      resultBox.textContent = `Bạn đúng ${correct}/${total} câu. ${correct === total ? "Xuất sắc! 🎉" : "Ôn lại phần sai rồi học tiếp nhé 💪"}`;
+
+      try {
+        let days = [];
+        try { days = JSON.parse((await window.storage.get(KEY_DAYS, false)).value); } catch (e) { days = []; }
+        let scores = {};
+        try { scores = JSON.parse((await window.storage.get(KEY_SCORES, false)).value); } catch (e) { scores = {}; }
+        scores[dayId] = `${correct}/${total}`;
+        await window.storage.set(KEY_SCORES, JSON.stringify(scores), false);
+
+        if (!days.includes(dayId)) {
+          days.push(dayId);
+          await window.storage.set(KEY_DAYS, JSON.stringify(days), false);
+          let streak = 0;
+          try { streak = parseInt((await window.storage.get(KEY_STREAK, false)).value, 10) || 0; } catch (e) { streak = 0; }
+          streak += 1;
+          await window.storage.set(KEY_STREAK, String(streak), false);
+          render(streak, days.length);
+        }
+      } catch (e) { console.error("Storage error:", e); }
+    });
+  }
+
+  (async function init() {
+    let streak = 0, days = [];
+    try { streak = parseInt((await window.storage.get(KEY_STREAK, false)).value, 10) || 0; } catch (e) { streak = 0; }
+    try { days = JSON.parse((await window.storage.get(KEY_DAYS, false)).value); } catch (e) { days = []; }
+    render(streak, days.length);
+  })();
+})();
+</script>
