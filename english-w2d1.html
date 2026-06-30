@@ -1,0 +1,766 @@
+<!--
+  TEMPLATE trang luyện tập tiếng Anh hàng ngày (bản nâng cấp v3).
+  CÁCH DÙNG: copy file này, CHỈ sửa object `lessonData` ở vùng "SỬA Ở ĐÂY".
+
+  GHI CHÚ KỸ THUẬT (không cần sửa, chỉ để hiểu vì sao code viết vậy):
+  - Markdown: các trường explanation/note/memoryTip/dialogue.vi hỗ trợ **bold**,
+    *italic*, `code` (dùng thư viện marked qua cdnjs). Nếu mạng chặn, code tự
+    fallback hiển thị chữ thường, không vỡ layout.
+  - Phát âm: dùng Web Speech API, có hàm cleanForSpeech() để bỏ dấu "/" và phần
+    trong ngoặc trước khi đọc, để không đọc thành tiếng các ký tự đó.
+  - Lưu trữ: dùng 1 construct `Store` DUY NHẤT — bên trong Claude.ai sẽ dùng
+    window.storage (cơ chế được hỗ trợ chính thức trong artifact); nếu mở file
+    này trực tiếp ngoài Claude.ai (file:// hoặc host riêng, không có window.storage),
+    Store tự chuyển sang dùng localStorage thật của trình duyệt — vẫn 1 store dùng
+    chung key, không cần đổi gì ở phần lessonData.
+-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+<div id="eng-app"></div>
+<style>
+  #eng-app {
+    --bg: #fbf6ee;
+    --card: #fffaf2;
+    --ink: #4a3b30;
+    --ink-soft: #8a7a6a;
+    --accent: #d97a52;
+    --accent2: #6f9a8d;
+    --accent-soft: #f1c6a8;
+    --good: #7a9a6e;
+    --good-bg: rgba(122,154,110,0.14);
+    --bad: #c4654f;
+    --bad-bg: rgba(196,101,79,0.1);
+    --tip: #c79a3a;
+    --tip-bg: rgba(199,154,58,0.14);
+    --border: rgba(74,59,48,0.12);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: var(--ink);
+    background: linear-gradient(160deg, #fdf2e3 0%, #fbf6ee 60%, #f7ecdd 100%);
+    border-radius: 20px;
+    padding: 28px;
+    max-width: 760px;
+    margin: 0 auto;
+    box-sizing: border-box;
+  }
+  #eng-app * { box-sizing: border-box; }
+  #eng-app p { margin: 0 0 8px; }
+  #eng-app code { background: rgba(74,59,48,0.08); padding: 1px 6px; border-radius: 6px; font-size: 0.92em; }
+  #eng-app strong { color: var(--accent); }
+
+  .eng-header { display:flex; justify-content:space-between; align-items:center; gap:14px; margin-bottom:20px; flex-wrap: wrap; }
+  .eng-header-left { display:flex; align-items:center; gap:14px; }
+  .eng-mascot { flex-shrink: 0; }
+  .eng-title { font-size: 22px; font-weight: 700; margin: 0 0 4px; }
+  .eng-sub { color: var(--ink-soft); font-size: 14px; margin: 0; }
+  .eng-header-right { display:flex; flex-direction:column; align-items:center; gap: 4px; }
+  .eng-ring text { font-family: -apple-system, sans-serif; }
+  .eng-streak { display:flex; align-items:center; gap:4px; font-size:13px; color: var(--accent); font-weight:700; }
+  .eng-streak svg { display:block; }
+
+  .eng-card {
+    background: rgba(255,255,255,0.6); backdrop-filter: blur(10px);
+    border: 1px solid var(--border); border-radius: 16px;
+    padding: 18px 20px; margin-bottom: 18px;
+    box-shadow: 0 4px 18px rgba(74,59,48,0.06);
+  }
+  .eng-section-title { font-size: 15px; font-weight: 700; margin: 0 0 12px; display:flex; align-items:center; gap:2px; }
+  .eng-section-sub { font-size: 12px; color: var(--ink-soft); margin: -6px 0 12px; }
+  .eng-icon { color: var(--accent); display:inline-flex; }
+
+  .eng-flash-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+  .eng-flash {
+    position: relative; background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 10px; text-align: center; cursor: pointer;
+    min-height: 82px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    transition: transform 0.15s ease, border-color 0.15s ease; user-select: none;
+  }
+  .eng-flash:hover { transform: translateY(-2px); border-color: var(--accent-soft); }
+  .eng-flash .front { font-weight: 600; font-size: 14px; }
+  .eng-flash .ipa { font-size: 11px; color: var(--ink-soft); margin-top: 2px; }
+  .eng-flash .back { display:none; font-size: 12px; color: var(--ink-soft); margin-top:4px; }
+  .eng-flash.flipped .front { color: var(--accent); }
+  .eng-flash.flipped .back { display:block; }
+  .eng-example {
+    font-size: 11px; color: var(--ink-soft); font-style: italic; margin-top: 4px; display:none;
+    background: rgba(217,122,82,0.07); border-radius: 8px; padding: 4px 8px; position: relative;
+  }
+  .eng-flash.flipped .eng-example { display:block; }
+  .eng-speak {
+    position:absolute; top:6px; right:6px; width:22px; height:22px; border-radius:50%;
+    border: none; background: rgba(217,122,82,0.12); color: var(--accent);
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+  }
+  .eng-speak:hover { background: rgba(217,122,82,0.22); }
+  .eng-speak svg { width: 12px; height: 12px; }
+
+  .eng-grammar-point { font-weight: 700; margin-bottom: 6px; }
+  .eng-grammar-ex-list { background: rgba(217,122,82,0.08); border-radius: 10px; padding: 10px 12px; margin-top: 8px; }
+  .eng-grammar-ex-row { display:flex; align-items:center; gap:8px; font-size: 14px; padding: 3px 0; }
+  .eng-mistake { display:flex; gap:14px; flex-wrap:wrap; margin-top:12px; }
+  .eng-mistake-box { flex:1; min-width:200px; border-radius: 10px; padding: 10px 12px; font-size: 13px; display:flex; gap:8px; align-items:flex-start; }
+  .eng-mistake-box.wrong { background: var(--bad-bg); color: var(--bad); }
+  .eng-mistake-box.right { background: var(--good-bg); color: var(--good); }
+  .eng-mistake-box span.txt { color: var(--ink); display:block; }
+  .eng-mistake-box b { display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:4px; }
+  .eng-tip-box { margin-top: 10px; background: var(--tip-bg); border-radius: 10px; padding: 10px 12px; font-size: 13px; display:flex; gap:8px; align-items:flex-start; }
+  .eng-tip-box .eng-icon { color: var(--tip); }
+
+  .eng-dialogue-line { display:flex; gap:10px; margin-bottom: 12px; align-items:flex-start; }
+  .eng-dialogue-avatar {
+    width: 30px; height: 30px; border-radius: 50%; color: #fff;
+    display:flex; align-items:center; justify-content:center; font-size: 12px; font-weight:700; flex-shrink:0;
+    background: linear-gradient(140deg, var(--accent), var(--accent-soft));
+  }
+  .eng-dialogue-line.b .eng-dialogue-avatar { background: linear-gradient(140deg, var(--accent2), #bcd3cb); }
+  .eng-dialogue-bubble { background: var(--card); border: 1px solid var(--border); border-radius: 0 12px 12px 12px; padding: 8px 12px; flex:1; }
+  .eng-dialogue-en { font-size: 14px; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+  .eng-dialogue-vi { font-size: 12px; color: var(--ink-soft); margin-top: 3px; display:none; }
+  .eng-dialogue-vi.show { display:block; }
+  .eng-toggle-vi { background:none; border:none; color: var(--accent); font-size:12px; cursor:pointer; text-decoration:underline; padding:0; margin-top:8px; }
+
+  .eng-ex-block { margin-bottom: 22px; }
+  .eng-ex-block:last-child { margin-bottom: 0; }
+  .eng-quiz-q { margin-bottom: 14px; }
+  .eng-quiz-q p { font-weight: 600; margin: 0 0 8px; font-size: 14px; }
+  .eng-diff { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 8px; margin-left: 6px; white-space: nowrap; }
+  .eng-opt {
+    display:block; width:100%; text-align:left; background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 9px 12px; margin-bottom: 6px; cursor:pointer; font-size: 14px; color: var(--ink);
+  }
+  .eng-opt:hover { border-color: var(--accent-soft); }
+  .eng-opt.selected { border-color: var(--accent); background: rgba(217,122,82,0.1); }
+  .eng-opt.correct { border-color: var(--good); background: var(--good-bg); }
+  .eng-opt.wrong { border-color: var(--bad); background: var(--bad-bg); }
+  .eng-opt-row { display:flex; gap:8px; }
+  .eng-opt-row .eng-opt { flex: 1; text-align:center; }
+
+  .eng-fill-input {
+    border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; font-size: 14px;
+    width: 130px; background: var(--card); color: var(--ink); font-family: inherit;
+  }
+  .eng-fill-input.correct { border-color: var(--good); background: var(--good-bg); }
+  .eng-fill-input.wrong { border-color: var(--bad); background: var(--bad-bg); }
+  .eng-fill-hint { font-size: 11px; color: var(--ink-soft); margin-top: 4px; }
+
+  .eng-build-pool, .eng-build-answer {
+    display:flex; flex-wrap:wrap; gap:8px; min-height: 42px; padding: 8px;
+    border-radius: 10px; border: 1px dashed var(--border);
+  }
+  .eng-build-answer { background: rgba(255,255,255,0.4); margin-bottom: 8px; }
+  .eng-build-word {
+    background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+    padding: 6px 12px; font-size: 14px; cursor: pointer; user-select:none;
+  }
+  .eng-build-word:hover { border-color: var(--accent-soft); }
+  .eng-build-word.used { opacity: 0.35; cursor: default; }
+  .eng-build-result { font-size: 12px; margin-top: 6px; font-weight:600; }
+  .eng-build-result.correct { color: var(--good); }
+  .eng-build-result.wrong { color: var(--bad); }
+
+  .eng-match-cols { display:flex; gap: 14px; }
+  .eng-match-col { flex:1; display:flex; flex-direction:column; gap:6px; }
+  .eng-match-paired { margin-top: 10px; }
+  .eng-match-paired-item {
+    display:flex; justify-content:space-between; align-items:center; gap:10px;
+    background: var(--good-bg); border-radius: 8px; padding: 5px 10px; margin-bottom: 5px; font-size: 13px;
+  }
+  .eng-match-unpair { cursor:pointer; color: var(--bad); font-weight:700; background:none; border:none; font-size: 14px; }
+
+  .eng-btn {
+    background: var(--accent); color: white; border: none; border-radius: 12px;
+    padding: 11px 20px; font-size: 14px; font-weight: 600; cursor: pointer;
+  }
+  .eng-btn:hover { opacity: 0.92; }
+  .eng-btn.ghost { background: rgba(217,122,82,0.12); color: var(--accent); padding: 6px 14px; font-size: 12px; }
+  .eng-result { margin-top: 14px; padding: 14px; border-radius: 12px; background: var(--good-bg); font-size: 14px; display:none; font-weight:600; }
+  .eng-tip { font-size: 12px; color: var(--ink-soft); text-align:center; margin-top: 6px; }
+</style>
+<script>
+(function(){
+
+  // ============ SỬA Ở ĐÂY: nội dung bài học của 1 ngày ============
+  // Mọi trường text dài (explanation, note, memoryTip, dialogue.vi) hỗ trợ markdown:
+  // **đậm**, *nghiêng*, `code`. difficulty nhận "easy" | "medium" | "hard".
+  const lessonData = {
+    week: 2,
+    day: 1,
+    title: "Gia đình & Tính từ sở hữu",
+    titleEn: "Family & Possessive Adjectives",
+
+    vocab: [
+      { en: "family", ipa: "/ˈfæməli/", vi: "gia đình", example: "I love my **family**." },
+      { en: "father / dad", ipa: "/ˈfɑːðər/", vi: "bố", example: "My **father** is a teacher." },
+      { en: "mother / mom", ipa: "/ˈmʌðər/", vi: "mẹ", example: "My **mother** works at home." },
+      { en: "brother", ipa: "/ˈbrʌðər/", vi: "anh / em trai", example: "His **brother** is a student." },
+      { en: "sister", ipa: "/ˈsɪstər/", vi: "chị / em gái", example: "Her **sister** is a doctor." },
+      { en: "husband", ipa: "/ˈhʌzbənd/", vi: "chồng", example: "Her **husband** works in IT." },
+      { en: "wife", ipa: "/waɪf/", vi: "vợ", example: "His **wife** is a designer." },
+      { en: "son", ipa: "/sʌn/", vi: "con trai", example: "Their **son** is five years old." },
+      { en: "daughter", ipa: "/ˈdɔːtər/", vi: "con gái", example: "My **daughter** loves reading." },
+      { en: "parents", ipa: "/ˈperənts/", vi: "bố mẹ (số nhiều)", example: "My **parents** live in Hanoi." },
+      { en: "my / your", ipa: "/maɪ/ /jʊr/", vi: "của tôi / của bạn", example: "This is **my** desk." },
+      { en: "his / her", ipa: "/hɪz/ /hɜːr/", vi: "của anh ấy / của cô ấy", example: "That is **his** laptop." },
+      { en: "our / their", ipa: "/ɑːr/ /ðer/", vi: "của chúng tôi / của họ", example: "**Their** office is big." }
+    ],
+
+    grammar: {
+      point: "Tính từ sở hữu: my / your / his / her / our / their",
+      explanation: "Tính từ sở hữu đứng **trước danh từ** để chỉ 'của ai': `my` (của tôi), `your` (của bạn), `his` (của anh ấy), `her` (của cô ấy), `our` (của chúng tôi), `their` (của họ). Khác với đại từ nhân xưng (I, he, she...), tính từ sở hữu **không bao giờ đứng một mình** — luôn cần một danh từ theo sau.",
+      examples: ["This is **my** family.", "**Her** brother is a developer.", "**Their** parents live in Hanoi."],
+      commonMistake: {
+        wrong: "This is he laptop.",
+        right: "This is his laptop.",
+        note: "Người học hay nhầm `he` (đại từ, đứng một mình, làm chủ ngữ) với `his` (tính từ sở hữu, phải đứng trước danh từ). Nhớ: nói về MỘT VẬT/NGƯỜI thuộc về ai đó → phải dùng tính từ sở hữu, không dùng đại từ."
+      },
+      memoryTip: "Cặp đôi dễ lẫn: `he` đi một mình làm chủ ngữ, `his` luôn kéo theo một danh từ phía sau — như đang 'sở hữu' từ đứng kế bên nó."
+    },
+
+    dialogue: {
+      titleVi: "Tình huống: kể về gia đình với đồng nghiệp",
+      lines: [
+        { speaker: "A", en: "Do you have a big family?", vi: "Gia đình bạn có đông người không?" },
+        { speaker: "B", en: "Yes, I have a big family. My father is a teacher, and my mother works at home.", vi: "Có, gia đình tôi đông người. Bố tôi là giáo viên, mẹ tôi làm việc ở nhà." },
+        { speaker: "A", en: "Do you have any brothers or sisters?", vi: "Bạn có anh chị em không?" },
+        { speaker: "B", en: "Yes, I have one sister. Her name is Linh, and she is a designer.", vi: "Có, tôi có một em gái. Tên cô ấy là Linh, và cô ấy làm thiết kế." }
+      ]
+    },
+
+    exercises: {
+      multipleChoice: [
+        { q: "This is ___ laptop. (của tôi)", options: ["I", "my", "me"], answer: "my", difficulty: "easy" },
+        { q: "___ brother is a developer. (của cô ấy)", options: ["She", "Her", "Hers"], answer: "Her", difficulty: "medium" },
+        { q: "That is ___ office, and ___ desk is over there. (của họ / của anh ấy)", options: ["their / his", "they / he", "their / he"], answer: "their / his", difficulty: "hard" },
+        { q: "___ parents live in Hanoi. (của chúng tôi)", options: ["We", "Our", "Us"], answer: "Our", difficulty: "medium" }
+      ],
+      trueFalse: [
+        { statement: "`His` và `her` đều có nghĩa là 'của anh ấy'.", isTrue: false, difficulty: "easy" },
+        { statement: "Tính từ sở hữu luôn đứng trước một danh từ, không đứng một mình.", isTrue: true, difficulty: "medium" },
+        { statement: "Câu `This is he laptop` viết đúng ngữ pháp.", isTrue: false, difficulty: "medium" }
+      ],
+      fillBlank: [
+        { sentence: "This is ___ family. (của tôi)", answer: "my", hint: "tính từ sở hữu", difficulty: "easy" },
+        { sentence: "___ sister is a designer. (của cô ấy)", answer: "Her", hint: "tính từ sở hữu", difficulty: "medium" }
+      ],
+      sentenceBuild: [
+        { words: ["is", "father", "My", "a", "teacher"], answer: "My father is a teacher", difficulty: "medium" },
+        { words: ["live", "Hanoi", "parents", "Their", "in"], answer: "Their parents live in Hanoi", difficulty: "hard" }
+      ],
+      matching: [
+        {
+          difficulty: "medium",
+          pairs: [
+            { en: "father", vi: "bố" },
+            { en: "mother", vi: "mẹ" },
+            { en: "brother", vi: "anh / em trai" },
+            { en: "sister", vi: "chị / em gái" },
+            { en: "daughter", vi: "con gái" }
+          ]
+        }
+      ]
+    }
+  };
+  // ============ HẾT VÙNG SỬA ============
+
+  const KEY_STREAK = "eng:streak";
+  const KEY_DAYS = "eng:completed-days";
+  const KEY_SCORES = "eng:scores";
+  const dayId = `w${lessonData.week}d${lessonData.day}`;
+
+  // ---------- Store: 1 construct lưu trữ DUY NHẤT dùng chung mọi trang ----------
+  // Trong Claude.ai: dùng window.storage (cơ chế artifact hỗ trợ chính thức).
+  // Ngoài Claude.ai (mở file trực tiếp / tự host): tự chuyển sang localStorage thật
+  // của trình duyệt, vẫn cùng 1 bộ key nên dữ liệu vẫn liền mạch giữa các trang.
+  const Store = {
+    hasClaude: typeof window.storage !== "undefined",
+    async get(key) {
+      if (this.hasClaude) {
+        try { const r = await window.storage.get(key, false); return r ? r.value : null; }
+        catch (e) { return null; }
+      }
+      try { return localStorage.getItem(key); } catch (e) { return null; }
+    },
+    async set(key, value) {
+      if (this.hasClaude) {
+        try { await window.storage.set(key, value, false); return true; }
+        catch (e) { return false; }
+      }
+      try { localStorage.setItem(key, value); return true; } catch (e) { return false; }
+    }
+  };
+
+  // ---------- Markdown (an toàn khi marked.js không tải được) ----------
+  function md(text) {
+    if (!text) return "";
+    try {
+      if (typeof marked !== "undefined") return marked.parseInline(String(text));
+    } catch (e) {}
+    return String(text);
+  }
+
+  // ---------- Text-to-speech: làm sạch trước khi đọc ----------
+  const ttsOk = typeof window.speechSynthesis !== "undefined";
+  function cleanForSpeech(text) {
+    let t = String(text).replace(/\([^)]*\)/g, "");      // bỏ phần trong ngoặc
+    const parts = t.split("/").map(p => p.trim()).filter(Boolean); // "hello / hi" -> ["hello","hi"]
+    return parts.join(", ");
+  }
+  function speak(text) {
+    if (!ttsOk) return;
+    try {
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(cleanForSpeech(text));
+      u.lang = "en-US";
+      u.rate = 0.92;
+      window.speechSynthesis.speak(u);
+    } catch (e) { /* một số sandbox chặn speech, bỏ qua */ }
+  }
+
+  // ---------- Icon SVG dùng chung ----------
+  const ICONS = {
+    card: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="14" height="10" rx="2"/><rect x="7.5" y="9" width="14" height="10" rx="2" fill="var(--card)"/></svg>`,
+    book: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5c2-1 5-1 7 0v14c-2-1-5-1-7 0V5Z"/><path d="M21 5c-2-1-5-1-7 0v14c2-1 5-1 7 0V5Z"/></svg>`,
+    chat: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v10H9l-4 4V5Z"/></svg>`,
+    pencil: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l1-4L16 5l3 3L8 19l-4 1Z"/></svg>`,
+    bulb: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3 11c.6.4 1 1 1 1.7V17h4v-1.3c0-.7.4-1.3 1-1.7a6 6 0 0 0-3-11Z"/></svg>`,
+    flame: `<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2c1 3-3 4-3 8a3 3 0 0 0 6 0c0-1-.5-2-1-2.5.7 1 1 2 1 3.5a4 4 0 1 1-8 0c0-4 3-5 5-9Z"/></svg>`,
+    speaker: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4Z" fill="currentColor" stroke="none"/><path d="M16 8c1.5 1.2 1.5 6.8 0 8M19 5c3 3 3 11 0 14"/></svg>`,
+    wrong: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg>`,
+    right: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg>`
+  };
+
+  function mascotSvg() {
+    return `<svg class="eng-mascot" viewBox="0 0 120 100" width="84" height="70">
+      <path d="M10 70 C8 32 38 8 66 14 C97 20 112 52 95 79 C79 104 30 101 10 70Z" fill="var(--accent-soft)" opacity="0.55"/>
+      <g transform="translate(26,26)">
+        <path d="M0 6c8-4 18-4 26 0v34c-8-4-18-4-26 0V6Z" fill="var(--card)" stroke="var(--accent)" stroke-width="2"/>
+        <path d="M52 6c-8-4-18-4-26 0v34c8-4 18-4 26 0V6Z" fill="var(--card)" stroke="var(--accent)" stroke-width="2"/>
+      </g>
+      <g stroke="var(--accent)" stroke-width="2" stroke-linecap="round" fill="none">
+        <path d="M90 22c4 2 6 6 6 10"/>
+        <path d="M97 16c6 3 9 9 9 16"/>
+      </g>
+      <circle cx="18" cy="20" r="2.4" fill="var(--accent)"/>
+      <circle cx="102" cy="62" r="2" fill="var(--accent)"/>
+    </svg>`;
+  }
+
+  function progressRing(day, total) {
+    const r = 24, c = 2 * Math.PI * r;
+    const pct = Math.max(0, Math.min(day / total, 1));
+    const offset = c * (1 - pct);
+    return `<svg class="eng-ring" viewBox="0 0 60 60" width="60" height="60">
+      <circle cx="30" cy="30" r="${r}" fill="none" stroke="var(--accent-soft)" stroke-width="6"/>
+      <circle cx="30" cy="30" r="${r}" fill="none" stroke="var(--accent)" stroke-width="6" stroke-linecap="round"
+        stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${offset.toFixed(1)}" transform="rotate(-90 30 30)"/>
+      <text x="30" y="28" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ink)">${day}/${total}</text>
+      <text x="30" y="39" text-anchor="middle" font-size="7" fill="var(--ink-soft)">ngày</text>
+    </svg>`;
+  }
+
+  function diffBadge(level) {
+    const map = {
+      easy: ["Dễ", "var(--good)", "var(--good-bg)"],
+      medium: ["Trung bình", "var(--tip)", "var(--tip-bg)"],
+      hard: ["Khó", "var(--bad)", "var(--bad-bg)"]
+    };
+    const [label, color, bg] = map[level] || map.medium;
+    return `<span class="eng-diff" style="color:${color};background:${bg}">${label}</span>`;
+  }
+
+  const app = document.getElementById("eng-app");
+
+  function speakBtn(text) {
+    if (!ttsOk) return "";
+    return `<button class="eng-speak" data-speak="${cleanForSpeech(text).replace(/"/g, "&quot;")}" title="Nghe đọc">${ICONS.speaker}</button>`;
+  }
+
+  function flashHtml(v) {
+    return `<div class="eng-flash">
+      ${speakBtn(v.en)}
+      <div class="front">${v.en}</div>
+      ${v.ipa ? `<div class="ipa">${v.ipa}</div>` : ""}
+      <div class="back">${v.vi}</div>
+      <div class="eng-example">${md(v.example)}</div>
+    </div>`;
+  }
+
+  function dialogueHtml(d) {
+    return d.lines.map((line) => `
+      <div class="eng-dialogue-line ${line.speaker.toLowerCase() === "b" ? "b" : ""}">
+        <div class="eng-dialogue-avatar">${line.speaker}</div>
+        <div class="eng-dialogue-bubble">
+          <div class="eng-dialogue-en">${line.en} ${speakBtn(line.en)}</div>
+          <div class="eng-dialogue-vi">${md(line.vi)}</div>
+        </div>
+      </div>`).join("") + `<button class="eng-toggle-vi" id="eng-toggle-vi">Hiện nghĩa tiếng Việt</button>`;
+  }
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function normalize(s) {
+    return s.toLowerCase().replace(/[.?!,]/g, "").trim().replace(/\s+/g, " ");
+  }
+
+  function render(streak, completedCount) {
+    const ex = lessonData.exercises;
+
+    app.innerHTML = `
+      <div class="eng-header">
+        <div class="eng-header-left">
+          ${mascotSvg()}
+          <div>
+            <p class="eng-title">Tuần ${lessonData.week} · Ngày ${lessonData.day}: ${lessonData.title}</p>
+            <p class="eng-sub">${lessonData.titleEn}</p>
+          </div>
+        </div>
+        <div class="eng-header-right">
+          ${progressRing(lessonData.day, 7)}
+          <div class="eng-streak" id="eng-streak-badge">${ICONS.flame}<b id="eng-streak-num">${streak}</b><span style="color:var(--ink-soft); font-weight:400;">· <span id="eng-days-num">${completedCount}</span> buổi</span></div>
+        </div>
+      </div>
+
+      <div class="eng-card">
+        <p class="eng-section-title"><span class="eng-icon">${ICONS.card}</span>Từ vựng (bấm để lật, bấm 🔊 để nghe)</p>
+        <div class="eng-flash-grid">${lessonData.vocab.map(flashHtml).join("")}</div>
+      </div>
+
+      <div class="eng-card">
+        <p class="eng-section-title"><span class="eng-icon">${ICONS.book}</span>Ngữ pháp: ${lessonData.grammar.point}</p>
+        <p>${md(lessonData.grammar.explanation)}</p>
+        <div class="eng-grammar-ex-list">
+          ${lessonData.grammar.examples.map(e => `<div class="eng-grammar-ex-row">${speakBtn(e.replace(/\*\*/g, ""))}${md(e)}</div>`).join("")}
+        </div>
+        ${lessonData.grammar.commonMistake ? `
+        <div class="eng-mistake">
+          <div class="eng-mistake-box wrong">${ICONS.wrong}<span><b>Sai thường gặp</b><span class="txt">${lessonData.grammar.commonMistake.wrong}</span></span></div>
+          <div class="eng-mistake-box right">${ICONS.right}<span><b>Đúng</b><span class="txt">${lessonData.grammar.commonMistake.right}</span></span></div>
+        </div>
+        <p class="eng-section-sub" style="margin-top:8px;">${md(lessonData.grammar.commonMistake.note)}</p>` : ""}
+        ${lessonData.grammar.memoryTip ? `<div class="eng-tip-box"><span class="eng-icon">${ICONS.bulb}</span>${md(lessonData.grammar.memoryTip)}</div>` : ""}
+      </div>
+
+      ${lessonData.dialogue ? `
+      <div class="eng-card">
+        <p class="eng-section-title"><span class="eng-icon">${ICONS.chat}</span>Hội thoại mẫu</p>
+        <p class="eng-section-sub">${lessonData.dialogue.titleVi}</p>
+        ${dialogueHtml(lessonData.dialogue)}
+      </div>` : ""}
+
+      <div class="eng-card">
+        <p class="eng-section-title"><span class="eng-icon">${ICONS.pencil}</span>Luyện tập</p>
+
+        ${ex.multipleChoice && ex.multipleChoice.length ? `<div class="eng-ex-block"><p class="eng-section-sub" style="margin-top:0;">Phần 1 · Trắc nghiệm</p><div id="eng-mc"></div></div>` : ""}
+        ${ex.trueFalse && ex.trueFalse.length ? `<div class="eng-ex-block"><p class="eng-section-sub">Phần 2 · Đúng hay Sai</p><div id="eng-tf"></div></div>` : ""}
+        ${ex.fillBlank && ex.fillBlank.length ? `<div class="eng-ex-block"><p class="eng-section-sub">Phần 3 · Điền từ</p><div id="eng-fill"></div></div>` : ""}
+        ${ex.sentenceBuild && ex.sentenceBuild.length ? `<div class="eng-ex-block"><p class="eng-section-sub">Phần 4 · Sắp xếp câu</p><div id="eng-build"></div></div>` : ""}
+        ${ex.matching && ex.matching.length ? `<div class="eng-ex-block"><p class="eng-section-sub">Phần 5 · Ghép cặp từ – nghĩa</p><div id="eng-match"></div></div>` : ""}
+
+        <button class="eng-btn" id="eng-submit">Kiểm tra kết quả</button>
+        <div class="eng-result" id="eng-result"></div>
+      </div>
+
+      <p class="eng-tip">Học xong, quay lại chat và nói với Claude: "Hôm nay học tiếp ngày ${lessonData.day + 1}" để tiếp tục lộ trình.</p>
+    `;
+
+    app.querySelectorAll("[data-speak]").forEach(btn => {
+      btn.addEventListener("click", (e) => { e.stopPropagation(); speak(btn.dataset.speak); });
+    });
+    app.querySelectorAll(".eng-flash").forEach(el => {
+      el.addEventListener("click", (e) => { if (!e.target.closest(".eng-speak")) el.classList.toggle("flipped"); });
+    });
+    const toggleBtn = document.getElementById("eng-toggle-vi");
+    if (toggleBtn) {
+      let shown = false;
+      toggleBtn.addEventListener("click", () => {
+        shown = !shown;
+        app.querySelectorAll(".eng-dialogue-vi").forEach(el => el.classList.toggle("show", shown));
+        toggleBtn.textContent = shown ? "Ẩn nghĩa tiếng Việt" : "Hiện nghĩa tiếng Việt";
+      });
+    }
+
+    // ---- Multiple choice ----
+    const mcSelections = {};
+    const mcBox = document.getElementById("eng-mc");
+    if (mcBox) {
+      ex.multipleChoice.forEach((q, qi) => {
+        const block = document.createElement("div");
+        block.className = "eng-quiz-q";
+        block.innerHTML = `<p>${qi + 1}. ${md(q.q)}${diffBadge(q.difficulty)}</p>` +
+          q.options.map(opt => `<button class="eng-opt" data-qi="${qi}" data-opt="${opt}">${opt}</button>`).join("");
+        mcBox.appendChild(block);
+      });
+      mcBox.querySelectorAll(".eng-opt").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const qi = btn.dataset.qi;
+          mcBox.querySelectorAll(`.eng-opt[data-qi="${qi}"]`).forEach(b => b.classList.remove("selected"));
+          btn.classList.add("selected");
+          mcSelections[qi] = btn.dataset.opt;
+        });
+      });
+    }
+
+    // ---- True / False ----
+    const tfSelections = {};
+    const tfBox = document.getElementById("eng-tf");
+    if (tfBox) {
+      ex.trueFalse.forEach((q, qi) => {
+        const block = document.createElement("div");
+        block.className = "eng-quiz-q";
+        block.innerHTML = `<p>${qi + 1}. ${md(q.statement)}${diffBadge(q.difficulty)}</p>
+          <div class="eng-opt-row">
+            <button class="eng-opt" data-tf="${qi}" data-val="true">Đúng (True)</button>
+            <button class="eng-opt" data-tf="${qi}" data-val="false">Sai (False)</button>
+          </div>`;
+        tfBox.appendChild(block);
+      });
+      tfBox.querySelectorAll(".eng-opt").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const qi = btn.dataset.tf;
+          tfBox.querySelectorAll(`.eng-opt[data-tf="${qi}"]`).forEach(b => b.classList.remove("selected"));
+          btn.classList.add("selected");
+          tfSelections[qi] = btn.dataset.val;
+        });
+      });
+    }
+
+    // ---- Fill blank ----
+    const fillBox = document.getElementById("eng-fill");
+    if (fillBox) {
+      ex.fillBlank.forEach((q, qi) => {
+        const [before, after] = q.sentence.split("___");
+        const block = document.createElement("div");
+        block.className = "eng-quiz-q";
+        block.innerHTML = `<p>${qi + 1}. ${before}<input class="eng-fill-input" data-qi="${qi}" type="text"/>${after || ""}${diffBadge(q.difficulty)}</p>
+          <div class="eng-fill-hint">Gợi ý: ${q.hint}</div>`;
+        fillBox.appendChild(block);
+      });
+    }
+
+    // ---- Sentence build ----
+    const buildBox = document.getElementById("eng-build");
+    const buildState = {};
+    if (buildBox) {
+      ex.sentenceBuild.forEach((q, qi) => {
+        const wrap = document.createElement("div");
+        wrap.className = "eng-quiz-q";
+        wrap.innerHTML = `<p>${qi + 1}. Sắp xếp thành câu đúng:${diffBadge(q.difficulty)}</p>
+          <div class="eng-build-answer" id="eng-build-ans-${qi}"></div>
+          <div class="eng-build-pool" id="eng-build-pool-${qi}"></div>
+          <button class="eng-btn ghost" data-reset="${qi}" style="margin-top:6px;">Làm lại</button>
+          <div class="eng-build-result" id="eng-build-result-${qi}"></div>`;
+        buildBox.appendChild(wrap);
+        buildState[qi] = { order: shuffle(q.words.map((w, wi) => ({ w, wi }))), used: new Set() };
+        renderBuildPool(qi);
+      });
+
+      function renderBuildPool(qi) {
+        const pool = document.getElementById(`eng-build-pool-${qi}`);
+        const st = buildState[qi];
+        pool.innerHTML = st.order.map(item =>
+          `<span class="eng-build-word${st.used.has(item.wi) ? " used" : ""}" data-qi="${qi}" data-wi="${item.wi}">${item.w}</span>`
+        ).join("");
+        pool.querySelectorAll(".eng-build-word").forEach(el => {
+          el.addEventListener("click", () => {
+            if (el.classList.contains("used")) return;
+            st.used.add(Number(el.dataset.wi));
+            const ans = document.getElementById(`eng-build-ans-${qi}`);
+            const chip = document.createElement("span");
+            chip.className = "eng-build-word";
+            chip.textContent = el.textContent;
+            chip.dataset.wi = el.dataset.wi;
+            chip.addEventListener("click", () => {
+              st.used.delete(Number(chip.dataset.wi));
+              chip.remove();
+              renderBuildPool(qi);
+            });
+            ans.appendChild(chip);
+            renderBuildPool(qi);
+          });
+        });
+      }
+
+      buildBox.querySelectorAll("[data-reset]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const qi = btn.dataset.reset;
+          buildState[qi].used = new Set();
+          document.getElementById(`eng-build-ans-${qi}`).innerHTML = "";
+          document.getElementById(`eng-build-result-${qi}`).textContent = "";
+          renderBuildPool(qi);
+        });
+      });
+    }
+
+    // ---- Matching (ghép cặp) ----
+    const matchBox = document.getElementById("eng-match");
+    const matchState = [];
+    if (matchBox) {
+      ex.matching.forEach((blockData, bi) => {
+        const wrap = document.createElement("div");
+        wrap.className = "eng-quiz-q";
+        wrap.innerHTML = `<p>Ghép từ tiếng Anh với nghĩa tiếng Việt:${diffBadge(blockData.difficulty)}</p>
+          <div class="eng-match-cols">
+            <div class="eng-match-col" id="eng-match-left-${bi}"></div>
+            <div class="eng-match-col" id="eng-match-right-${bi}"></div>
+          </div>
+          <div class="eng-match-paired" id="eng-match-paired-${bi}"></div>
+          <button class="eng-btn ghost" data-match-reset="${bi}" style="margin-top:6px;">Làm lại</button>`;
+        matchBox.appendChild(wrap);
+        matchState[bi] = {
+          pairs: blockData.pairs,
+          left: shuffle(blockData.pairs.map((p, i) => ({ text: p.en, idx: i }))),
+          right: shuffle(blockData.pairs.map((p, i) => ({ text: p.vi, idx: i }))),
+          matched: {}, locked: new Set(), selectedLeft: null
+        };
+        renderMatch(bi);
+      });
+
+      function renderMatch(bi) {
+        const st = matchState[bi];
+        const leftCol = document.getElementById(`eng-match-left-${bi}`);
+        const rightCol = document.getElementById(`eng-match-right-${bi}`);
+        const pairedBox = document.getElementById(`eng-match-paired-${bi}`);
+
+        leftCol.innerHTML = st.left.map(item =>
+          `<button class="eng-build-word${st.locked.has("L" + item.idx) ? " used" : ""}${st.selectedLeft === item.idx ? " selected" : ""}" data-side="L" data-idx="${item.idx}">${item.text}</button>`
+        ).join("");
+        rightCol.innerHTML = st.right.map(item =>
+          `<button class="eng-build-word${st.locked.has("R" + item.idx) ? " used" : ""}" data-side="R" data-idx="${item.idx}">${item.text}</button>`
+        ).join("");
+        pairedBox.innerHTML = Object.entries(st.matched).map(([l, r]) =>
+          `<div class="eng-match-paired-item"><span>${st.pairs[l].en} — ${st.pairs[r].vi}</span><button class="eng-match-unpair" data-unpair-l="${l}" data-block="${bi}">✕</button></div>`
+        ).join("");
+
+        leftCol.querySelectorAll("[data-side='L']").forEach(btn => {
+          btn.addEventListener("click", () => {
+            if (btn.classList.contains("used")) return;
+            st.selectedLeft = Number(btn.dataset.idx);
+            renderMatch(bi);
+          });
+        });
+        rightCol.querySelectorAll("[data-side='R']").forEach(btn => {
+          btn.addEventListener("click", () => {
+            if (btn.classList.contains("used") || st.selectedLeft === null) return;
+            const rIdx = Number(btn.dataset.idx);
+            st.matched[st.selectedLeft] = rIdx;
+            st.locked.add("L" + st.selectedLeft);
+            st.locked.add("R" + rIdx);
+            st.selectedLeft = null;
+            renderMatch(bi);
+          });
+        });
+        pairedBox.querySelectorAll("[data-unpair-l]").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const l = btn.dataset.unpairL;
+            const r = st.matched[l];
+            st.locked.delete("L" + l);
+            st.locked.delete("R" + r);
+            delete st.matched[l];
+            renderMatch(bi);
+          });
+        });
+      }
+
+      matchBox.querySelectorAll("[data-match-reset]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const bi = btn.dataset.matchReset;
+          matchState[bi].matched = {};
+          matchState[bi].locked = new Set();
+          matchState[bi].selectedLeft = null;
+          renderMatch(bi);
+        });
+      });
+    }
+
+    // ---- Submit / grade everything ----
+    document.getElementById("eng-submit").addEventListener("click", async () => {
+      let correct = 0, total = 0;
+
+      if (mcBox) {
+        ex.multipleChoice.forEach((q, qi) => {
+          total++;
+          mcBox.querySelectorAll(`.eng-opt[data-qi="${qi}"]`).forEach(b => {
+            if (b.dataset.opt === q.answer) b.classList.add("correct");
+            else if (b.dataset.opt === mcSelections[qi]) b.classList.add("wrong");
+          });
+          if (mcSelections[qi] === q.answer) correct++;
+        });
+      }
+      if (tfBox) {
+        ex.trueFalse.forEach((q, qi) => {
+          total++;
+          const want = String(q.isTrue);
+          tfBox.querySelectorAll(`.eng-opt[data-tf="${qi}"]`).forEach(b => {
+            if (b.dataset.val === want) b.classList.add("correct");
+            else if (b.dataset.val === tfSelections[qi]) b.classList.add("wrong");
+          });
+          if (tfSelections[qi] === want) correct++;
+        });
+      }
+      if (fillBox) {
+        ex.fillBlank.forEach((q, qi) => {
+          total++;
+          const input = fillBox.querySelector(`.eng-fill-input[data-qi="${qi}"]`);
+          const ok = normalize(input.value) === normalize(q.answer);
+          input.classList.add(ok ? "correct" : "wrong");
+          if (ok) correct++;
+        });
+      }
+      if (buildBox) {
+        ex.sentenceBuild.forEach((q, qi) => {
+          total++;
+          const ans = document.getElementById(`eng-build-ans-${qi}`);
+          const text = Array.from(ans.children).map(c => c.textContent).join(" ");
+          const ok = normalize(text) === normalize(q.answer);
+          const result = document.getElementById(`eng-build-result-${qi}`);
+          result.className = "eng-build-result " + (ok ? "correct" : "wrong");
+          result.textContent = ok ? "Đúng rồi!" : `Chưa đúng. Đáp án: "${q.answer}"`;
+          if (ok) correct++;
+        });
+      }
+      if (matchBox) {
+        ex.matching.forEach((blockData, bi) => {
+          const st = matchState[bi];
+          total += blockData.pairs.length;
+          Object.entries(st.matched).forEach(([l, r]) => { if (Number(l) === Number(r)) correct++; });
+        });
+      }
+
+      const resultBox = document.getElementById("eng-result");
+      resultBox.style.display = "block";
+      resultBox.textContent = `Bạn đúng ${correct}/${total} câu. ${correct === total ? "Xuất sắc!" : "Ôn lại phần sai rồi học tiếp nhé"}`;
+
+      try {
+        let days = JSON.parse(await Store.get(KEY_DAYS) || "[]");
+        let scores = JSON.parse(await Store.get(KEY_SCORES) || "{}");
+        scores[dayId] = `${correct}/${total}`;
+        await Store.set(KEY_SCORES, JSON.stringify(scores));
+
+        if (!days.includes(dayId)) {
+          days.push(dayId);
+          await Store.set(KEY_DAYS, JSON.stringify(days));
+          let streak = parseInt(await Store.get(KEY_STREAK), 10) || 0;
+          streak += 1;
+          await Store.set(KEY_STREAK, String(streak));
+          const streakNum = document.getElementById("eng-streak-num");
+          const daysNum = document.getElementById("eng-days-num");
+          if (streakNum) streakNum.textContent = streak;
+          if (daysNum) daysNum.textContent = days.length;
+        }
+      } catch (e) { console.error("Storage error:", e); }
+    });
+  }
+
+  (async function init() {
+    const streak = parseInt(await Store.get(KEY_STREAK), 10) || 0;
+    let days = [];
+    try { days = JSON.parse(await Store.get(KEY_DAYS) || "[]"); } catch (e) { days = []; }
+    render(streak, days.length);
+  })();
+})();
+</script>
