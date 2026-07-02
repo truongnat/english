@@ -195,78 +195,79 @@
   // Mọi trường text dài (explanation, note, memoryTip, dialogue.vi) hỗ trợ markdown:
   // **đậm**, *nghiêng*, `code`. difficulty nhận "easy" | "medium" | "hard".
   const lessonData = {
-    week: 2,
-    day: 2,
-    title: "Nghề nghiệp & Hiện tại đơn",
-    titleEn: "Jobs & Present Simple",
+    week: 3,
+    day: 5,
+    title: "Mô tả ngôi nhà & Số nhiều bất quy tắc",
+    titleEn: "Describing Your Home & Irregular Plurals",
 
     vocab: [
-      { en: "What do you do?", ipa: "/wʌt duː juː duː/", vi: "Bạn làm nghề gì?", example: "**What do you do?** — I am a developer." },
-      { en: "teacher", ipa: "/ˈtiːtʃər/", vi: "giáo viên", example: "She is a **teacher**." },
-      { en: "designer", ipa: "/dɪˈzaɪnər/", vi: "nhà thiết kế", example: "My sister is a **designer**." },
-      { en: "manager", ipa: "/ˈmænɪdʒər/", vi: "quản lý", example: "He is a **manager**." },
-      { en: "tester", ipa: "/ˈtestər/", vi: "người kiểm thử phần mềm", example: "She works as a **tester**." },
-      { en: "engineer", ipa: "/ˌendʒɪˈnɪr/", vi: "kỹ sư", example: "He is a software **engineer**." },
-      { en: "doctor", ipa: "/ˈdɑːktər/", vi: "bác sĩ", example: "My mother is a **doctor**." },
-      { en: "every day", ipa: "/ˈevri deɪ/", vi: "mỗi ngày", example: "I check email **every day**." },
-      { en: "usually", ipa: "/ˈjuːʒuəli/", vi: "thường thì", example: "I **usually** start work at 9 AM." },
-      { en: "code (to code)", ipa: "/koʊd/", vi: "viết mã / lập trình", example: "He **codes** every day." },
-      { en: "fix (to fix)", ipa: "/fɪks/", vi: "sửa (lỗi)", example: "She **fixes** bugs every day." },
-      { en: "meeting", ipa: "/ˈmiːtɪŋ/", vi: "cuộc họp", example: "We have a **meeting** every morning." }
+      { en: "bedroom", ipa: "/ˈbedruːm/", vi: "phòng ngủ", example: "My flat has two **bedrooms**." },
+      { en: "living room", ipa: "/ˈlɪvɪŋ ruːm/", vi: "phòng khách", example: "The **living room** is big." },
+      { en: "kitchen", ipa: "/ˈkɪtʃɪn/", vi: "nhà bếp", example: "There is a fridge in the **kitchen**." },
+      { en: "bathroom", ipa: "/ˈbæθruːm/", vi: "phòng tắm", example: "The **bathroom** is next to my bedroom." },
+      { en: "balcony", ipa: "/ˈbælkəni/", vi: "ban công", example: "We have a small **balcony**." },
+      { en: "fridge", ipa: "/frɪdʒ/", vi: "tủ lạnh", example: "Is there any food in the **fridge**?" },
+      { en: "man → men", ipa: "/mæn/ /men/", vi: "đàn ông → những người đàn ông", example: "There are two **men** in the office." },
+      { en: "woman → women", ipa: "/ˈwʊmən/ /ˈwɪmɪn/", vi: "phụ nữ → những phụ nữ", example: "There are three **women** in the meeting." },
+      { en: "child → children", ipa: "/tʃaɪld/ /ˈtʃɪldrən/", vi: "đứa trẻ → những đứa trẻ", example: "She has two **children**." },
+      { en: "person → people", ipa: "/ˈpɜːrsən/ /ˈpiːpəl/", vi: "người → mọi người", example: "There are many **people** in the café." },
+      { en: "foot → feet", ipa: "/fʊt/ /fiːt/", vi: "bàn chân → các bàn chân", example: "The desk is six **feet** wide." },
+      { en: "flat / apartment", ipa: "/flæt/", vi: "căn hộ", example: "I live in a small **flat**." },
+      { en: "floor (of building)", ipa: "/flɔːr/", vi: "tầng (của tòa nhà)", example: "I live on the fifth **floor**." }
     ],
 
     grammar: {
-      point: "Hiện tại đơn (thói quen): thêm s/es với chủ ngữ ngôi thứ 3 số ít",
-      explanation: "Hiện tại đơn diễn tả thói quen, công việc lặp lại hàng ngày. Với **I/You/We/They**, giữ nguyên động từ: `I code every day`. Với **He/She/It** (ngôi 3 số ít), động từ phải thêm `s` hoặc `es`: `He codes every day`, `She fixes bugs`. Động từ tận cùng bằng `-s, -x, -ch, -sh, -o` thì thêm `es` (vd: `fix → fixes`).",
-      examples: ["I **code** every day.", "She **fixes** bugs every day.", "He **usually** starts work at 9 AM."],
+      point: "Danh từ số nhiều bất quy tắc: không thêm s/es mà đổi hẳn hình thức",
+      explanation: "Hầu hết danh từ thêm `s/es` để thành số nhiều. Nhưng một số từ **đổi hẳn hình thức** (bất quy tắc), không thêm `s`: `man → men`, `woman → women`, `child → children`, `person → people`. Phải học thuộc vì không có quy tắc chung. Đây là các từ **cực kỳ thường gặp** trong giao tiếp hàng ngày.",
+      examples: ["There are two **men** and three **women** in the meeting.", "She has two **children**.", "There are many **people** in the café."],
       commonMistake: {
-        wrong: "She fix bugs every day.",
-        right: "She fixes bugs every day.",
-        note: "Tiếng Việt không chia động từ theo chủ ngữ (\"cô ấy sửa\" và \"tôi sửa\" dùng chung động từ \"sửa\"), nên người học hay quên thêm `s/es` khi chủ ngữ là he/she/it. Đây là lỗi phổ biến thứ 2 sau lỗi quên TO BE."
+        wrong: "There are two childs in the photo.",
+        right: "There are two children in the photo.",
+        note: "Người học hay thêm `s` vào tất cả danh từ theo thói quen. Các từ bất quy tắc như `children/men/women/people` **không bao giờ** thêm `s` — nếu thấy `childrens/mans/womans/peoples` thì chắc chắn là sai."
       },
-      memoryTip: "Quy tắc 'ngôi 3 số ít thêm S' — hễ thấy **he/she/it** hoặc tên một người/vật duy nhất làm chủ ngữ, kiểm tra ngay xem động từ đã có `s/es` chưa."
+      memoryTip: "Học 4 cặp quan trọng nhất theo nhóm: **man→men, woman→women** (đổi âm giữa), **child→children, person→people** (đổi hẳn). Bốn cặp này xuất hiện gần như hàng ngày."
     },
 
     dialogue: {
-      titleVi: "Tình huống: hỏi thăm công việc hàng ngày",
+      titleVi: "Tình huống: kể về nơi ở với đồng nghiệp",
       lines: [
-        { speaker: "A", en: "What do you do?", vi: "Bạn làm nghề gì?" },
-        { speaker: "B", en: "I am a developer. I code every day.", vi: "Tôi là lập trình viên. Tôi viết mã mỗi ngày." },
-        { speaker: "A", en: "What does your sister do?", vi: "Em gái bạn làm nghề gì?" },
-        { speaker: "B", en: "She is a tester. She fixes bugs and checks the app every day.", vi: "Cô ấy là tester. Cô ấy sửa lỗi và kiểm tra ứng dụng mỗi ngày." }
+        { speaker: "A", en: "Do you live far from the office?", vi: "Bạn có sống xa văn phòng không?" },
+        { speaker: "B", en: "No, I live nearby. I have a small flat on the fifth floor.", vi: "Không, tôi sống gần đây. Tôi có một căn hộ nhỏ ở tầng năm." },
+        { speaker: "A", en: "How many bedrooms does your flat have?", vi: "Căn hộ của bạn có mấy phòng ngủ?" },
+        { speaker: "B", en: "It has two bedrooms and a small balcony. There are many people in my building, but it is quiet.", vi: "Có hai phòng ngủ và một ban công nhỏ. Tòa nhà của tôi có nhiều người, nhưng rất yên tĩnh." }
       ]
     },
 
     exercises: {
       multipleChoice: [
-        { q: "I ___ every day.", options: ["code", "codes", "coding"], answer: "code", difficulty: "easy" },
-        { q: "She ___ bugs every day.", options: ["fix", "fixes", "fixing"], answer: "fixes", difficulty: "medium" },
-        { q: "He ___ work at 9 AM, and they ___ at 10 AM.", options: ["starts / start", "start / starts", "starts / starts"], answer: "starts / start", difficulty: "hard" },
-        { q: "Cách hỏi nghề nghiệp đúng là gì?", options: ["What you do?", "What do you do?", "What does you do?"], answer: "What do you do?", difficulty: "medium" },
-        { q: "That is ___ laptop. (của anh ấy, ôn lại Ngày 1)", options: ["he", "his", "him"], answer: "his", difficulty: "easy" }
+        { q: "Số nhiều của 'child' là gì?", options: ["childs", "children", "childes"], answer: "children", difficulty: "easy" },
+        { q: "Số nhiều của 'woman' là gì?", options: ["womans", "women", "womanies"], answer: "women", difficulty: "easy" },
+        { q: "There are many ___ in the café.", options: ["person", "peoples", "people"], answer: "people", difficulty: "medium" },
+        { q: "How many ___ does your flat have? (phòng ngủ)", options: ["bedroom", "bedrooms", "bedroomses"], answer: "bedrooms", difficulty: "medium" },
+        { q: "Từ nào là danh từ **không đếm được**? (ôn lại Ngày 4)", options: ["bug", "feedback", "idea"], answer: "feedback", difficulty: "hard" }
       ],
       trueFalse: [
-        { statement: "Với chủ ngữ `she`, động từ `fix` phải đổi thành `fixes`.", isTrue: true, difficulty: "easy" },
-        { statement: "Câu `He code every day` viết đúng ngữ pháp.", isTrue: false, difficulty: "medium" },
-        { statement: "`Tester` là người kiểm thử phần mềm.", isTrue: true, difficulty: "easy" }
+        { statement: "Số nhiều của `man` là `men`, không phải `mans`.", isTrue: true, difficulty: "easy" },
+        { statement: "Câu `There are two childs in the photo` viết đúng ngữ pháp.", isTrue: false, difficulty: "medium" },
+        { statement: "`People` là dạng số nhiều của `person`.", isTrue: true, difficulty: "medium" }
       ],
       fillBlank: [
-        { sentence: "He ___ every day. (code)", answer: "codes", hint: "ngôi 3 số ít, thêm s", difficulty: "medium" },
-        { sentence: "I ___ work at 9 AM. (start)", answer: "start", hint: "chủ ngữ I, giữ nguyên", difficulty: "easy" }
+        { sentence: "She has two ___ . (đứa trẻ)", answer: "children", hint: "số nhiều bất quy tắc của child", difficulty: "easy" },
+        { sentence: "There are five ___ in the meeting. (phụ nữ)", answer: "women", hint: "số nhiều bất quy tắc của woman", difficulty: "medium" }
       ],
       sentenceBuild: [
-        { words: ["do", "What", "you", "do"], answer: "What do you do", difficulty: "medium" },
-        { words: ["bugs", "fixes", "She", "every", "day"], answer: "She fixes bugs every day", difficulty: "hard" }
+        { words: ["people", "are", "many", "There", "café", "in", "the"], answer: "There are many people in the café", difficulty: "medium" },
+        { words: ["flat", "bedrooms", "has", "My", "two"], answer: "My flat has two bedrooms", difficulty: "hard" }
       ],
       matching: [
         {
           difficulty: "medium",
           pairs: [
-            { en: "teacher", vi: "giáo viên" },
-            { en: "designer", vi: "nhà thiết kế" },
-            { en: "manager", vi: "quản lý" },
-            { en: "tester", vi: "người kiểm thử phần mềm" },
-            { en: "engineer", vi: "kỹ sư" }
+            { en: "man", vi: "men" },
+            { en: "woman", vi: "women" },
+            { en: "child", vi: "children" },
+            { en: "person", vi: "people" },
+            { en: "bedroom", vi: "phòng ngủ" }
           ]
         }
       ]

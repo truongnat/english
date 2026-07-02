@@ -195,78 +195,77 @@
   // Mọi trường text dài (explanation, note, memoryTip, dialogue.vi) hỗ trợ markdown:
   // **đậm**, *nghiêng*, `code`. difficulty nhận "easy" | "medium" | "hard".
   const lessonData = {
-    week: 2,
-    day: 2,
-    title: "Nghề nghiệp & Hiện tại đơn",
-    titleEn: "Jobs & Present Simple",
+    week: 3,
+    day: 6,
+    title: "So sánh hơn",
+    titleEn: "Comparative Adjectives",
 
     vocab: [
-      { en: "What do you do?", ipa: "/wʌt duː juː duː/", vi: "Bạn làm nghề gì?", example: "**What do you do?** — I am a developer." },
-      { en: "teacher", ipa: "/ˈtiːtʃər/", vi: "giáo viên", example: "She is a **teacher**." },
-      { en: "designer", ipa: "/dɪˈzaɪnər/", vi: "nhà thiết kế", example: "My sister is a **designer**." },
-      { en: "manager", ipa: "/ˈmænɪdʒər/", vi: "quản lý", example: "He is a **manager**." },
-      { en: "tester", ipa: "/ˈtestər/", vi: "người kiểm thử phần mềm", example: "She works as a **tester**." },
-      { en: "engineer", ipa: "/ˌendʒɪˈnɪr/", vi: "kỹ sư", example: "He is a software **engineer**." },
-      { en: "doctor", ipa: "/ˈdɑːktər/", vi: "bác sĩ", example: "My mother is a **doctor**." },
-      { en: "every day", ipa: "/ˈevri deɪ/", vi: "mỗi ngày", example: "I check email **every day**." },
-      { en: "usually", ipa: "/ˈjuːʒuəli/", vi: "thường thì", example: "I **usually** start work at 9 AM." },
-      { en: "code (to code)", ipa: "/koʊd/", vi: "viết mã / lập trình", example: "He **codes** every day." },
-      { en: "fix (to fix)", ipa: "/fɪks/", vi: "sửa (lỗi)", example: "She **fixes** bugs every day." },
-      { en: "meeting", ipa: "/ˈmiːtɪŋ/", vi: "cuộc họp", example: "We have a **meeting** every morning." }
+      { en: "bigger", ipa: "/ˈbɪɡər/", vi: "to hơn, lớn hơn", example: "My new office is **bigger** than the old one." },
+      { en: "smaller", ipa: "/ˈsmɔːlər/", vi: "nhỏ hơn", example: "This room is **smaller** than the meeting room." },
+      { en: "faster", ipa: "/ˈfæstər/", vi: "nhanh hơn", example: "My new laptop is **faster** than before." },
+      { en: "slower", ipa: "/ˈsloʊər/", vi: "chậm hơn", example: "The old computer is **slower** than this one." },
+      { en: "cheaper", ipa: "/ˈtʃiːpər/", vi: "rẻ hơn", example: "This keyboard is **cheaper** than the other one." },
+      { en: "more expensive", ipa: "/mɔːr ɪkˈspensɪv/", vi: "đắt hơn", example: "A MacBook is **more expensive** than this laptop." },
+      { en: "better", ipa: "/ˈbetər/", vi: "tốt hơn (bất quy tắc)", example: "This solution is **better** than mine." },
+      { en: "worse", ipa: "/wɜːrs/", vi: "tệ hơn (bất quy tắc)", example: "This bug is **worse** than I thought." },
+      { en: "quieter", ipa: "/ˈkwaɪətər/", vi: "yên tĩnh hơn", example: "My home office is **quieter** than the main office." },
+      { en: "than", ipa: "/ðæn/", vi: "hơn (dùng sau so sánh)", example: "My laptop is faster **than** yours." },
+      { en: "much", ipa: "/mʌtʃ/", vi: "nhiều hơn (nhấn mạnh)", example: "This is **much** better than before." }
     ],
 
     grammar: {
-      point: "Hiện tại đơn (thói quen): thêm s/es với chủ ngữ ngôi thứ 3 số ít",
-      explanation: "Hiện tại đơn diễn tả thói quen, công việc lặp lại hàng ngày. Với **I/You/We/They**, giữ nguyên động từ: `I code every day`. Với **He/She/It** (ngôi 3 số ít), động từ phải thêm `s` hoặc `es`: `He codes every day`, `She fixes bugs`. Động từ tận cùng bằng `-s, -x, -ch, -sh, -o` thì thêm `es` (vd: `fix → fixes`).",
-      examples: ["I **code** every day.", "She **fixes** bugs every day.", "He **usually** starts work at 9 AM."],
+      point: "So sánh hơn: tính từ ngắn + -er / more + tính từ dài + than",
+      explanation: "Tính từ **ngắn** (1-2 âm tiết): thêm `-er` → `big→bigger`, `fast→faster`, `cheap→cheaper`. Lưu ý: tính từ kết thúc bằng phụ âm đơn sau nguyên âm đơn thì nhân đôi phụ âm cuối: `big→bi**gg**er`. Tính từ **dài** (từ 3 âm tiết trở lên): thêm `more` đằng trước → `more expensive`, `more comfortable`. Hai trường hợp **bất quy tắc** phải nhớ: `good→**better**`, `bad→**worse**`. Luôn dùng `than` để so sánh với cái khác.",
+      examples: ["My laptop is **faster than** yours.", "A MacBook is **more expensive than** this one.", "This solution is **better than** mine."],
       commonMistake: {
-        wrong: "She fix bugs every day.",
-        right: "She fixes bugs every day.",
-        note: "Tiếng Việt không chia động từ theo chủ ngữ (\"cô ấy sửa\" và \"tôi sửa\" dùng chung động từ \"sửa\"), nên người học hay quên thêm `s/es` khi chủ ngữ là he/she/it. Đây là lỗi phổ biến thứ 2 sau lỗi quên TO BE."
+        wrong: "My laptop is more fast than yours.",
+        right: "My laptop is faster than yours.",
+        note: "Người học hay dùng `more` cho mọi tính từ vì trong tiếng Việt chỉ cần thêm 'hơn' vào sau bất kỳ tính từ nào. Tiếng Anh bắt buộc phân biệt: tính từ ngắn (1-2 âm) → thêm **-er**, tính từ dài (3+ âm) → dùng **more**."
       },
-      memoryTip: "Quy tắc 'ngôi 3 số ít thêm S' — hễ thấy **he/she/it** hoặc tên một người/vật duy nhất làm chủ ngữ, kiểm tra ngay xem động từ đã có `s/es` chưa."
+      memoryTip: "Đếm âm tiết: **1-2 âm → thêm -er** (`fast→faster`), **3+ âm → thêm more** (`expensive→more expensive`). Và nhớ 2 trường hợp ngoại lệ: `good→better`, `bad→worse`."
     },
 
     dialogue: {
-      titleVi: "Tình huống: hỏi thăm công việc hàng ngày",
+      titleVi: "Tình huống: so sánh hai chiếc laptop trước khi mua",
       lines: [
-        { speaker: "A", en: "What do you do?", vi: "Bạn làm nghề gì?" },
-        { speaker: "B", en: "I am a developer. I code every day.", vi: "Tôi là lập trình viên. Tôi viết mã mỗi ngày." },
-        { speaker: "A", en: "What does your sister do?", vi: "Em gái bạn làm nghề gì?" },
-        { speaker: "B", en: "She is a tester. She fixes bugs and checks the app every day.", vi: "Cô ấy là tester. Cô ấy sửa lỗi và kiểm tra ứng dụng mỗi ngày." }
+        { speaker: "A", en: "Which laptop is better, this one or the MacBook?", vi: "Chiếc laptop nào tốt hơn, cái này hay MacBook?" },
+        { speaker: "B", en: "The MacBook is faster and quieter, but it's much more expensive.", vi: "MacBook nhanh hơn và yên tĩnh hơn, nhưng nó đắt hơn nhiều." },
+        { speaker: "A", en: "Is this one cheaper than the MacBook?", vi: "Cái này có rẻ hơn MacBook không?" },
+        { speaker: "B", en: "Yes, it's much cheaper. And for coding, I think it's good enough.", vi: "Có, rẻ hơn nhiều. Và để lập trình, tôi nghĩ nó đủ tốt rồi." }
       ]
     },
 
     exercises: {
       multipleChoice: [
-        { q: "I ___ every day.", options: ["code", "codes", "coding"], answer: "code", difficulty: "easy" },
-        { q: "She ___ bugs every day.", options: ["fix", "fixes", "fixing"], answer: "fixes", difficulty: "medium" },
-        { q: "He ___ work at 9 AM, and they ___ at 10 AM.", options: ["starts / start", "start / starts", "starts / starts"], answer: "starts / start", difficulty: "hard" },
-        { q: "Cách hỏi nghề nghiệp đúng là gì?", options: ["What you do?", "What do you do?", "What does you do?"], answer: "What do you do?", difficulty: "medium" },
-        { q: "That is ___ laptop. (của anh ấy, ôn lại Ngày 1)", options: ["he", "his", "him"], answer: "his", difficulty: "easy" }
+        { q: "My laptop is ___ than yours. (fast)", options: ["more fast", "faster", "more faster"], answer: "faster", difficulty: "easy" },
+        { q: "A MacBook is ___ than this laptop. (expensive)", options: ["expensiver", "more expensive", "more expensiver"], answer: "more expensive", difficulty: "medium" },
+        { q: "This solution is ___. (good, bất quy tắc)", options: ["gooder", "more good", "better"], answer: "better", difficulty: "medium" },
+        { q: "My home office is ___ than the main office. (quiet)", options: ["more quiet", "quieter", "quietter"], answer: "quieter", difficulty: "hard" },
+        { q: "Số nhiều của 'child' là gì? (ôn lại Ngày 5)", options: ["childs", "children", "childes"], answer: "children", difficulty: "easy" }
       ],
       trueFalse: [
-        { statement: "Với chủ ngữ `she`, động từ `fix` phải đổi thành `fixes`.", isTrue: true, difficulty: "easy" },
-        { statement: "Câu `He code every day` viết đúng ngữ pháp.", isTrue: false, difficulty: "medium" },
-        { statement: "`Tester` là người kiểm thử phần mềm.", isTrue: true, difficulty: "easy" }
+        { statement: "Tính từ dài (3+ âm tiết) dùng `more` thay vì thêm `-er`.", isTrue: true, difficulty: "easy" },
+        { statement: "Câu `My laptop is more fast than yours` viết đúng ngữ pháp.", isTrue: false, difficulty: "medium" },
+        { statement: "So sánh hơn của `good` là `better`, không phải `gooder`.", isTrue: true, difficulty: "easy" }
       ],
       fillBlank: [
-        { sentence: "He ___ every day. (code)", answer: "codes", hint: "ngôi 3 số ít, thêm s", difficulty: "medium" },
-        { sentence: "I ___ work at 9 AM. (start)", answer: "start", hint: "chủ ngữ I, giữ nguyên", difficulty: "easy" }
+        { sentence: "This room is ___ than the meeting room. (small)", answer: "smaller", hint: "tính từ ngắn + er", difficulty: "easy" },
+        { sentence: "This bug is ___ than I thought. (bad, bất quy tắc)", answer: "worse", hint: "bad → ?", difficulty: "medium" }
       ],
       sentenceBuild: [
-        { words: ["do", "What", "you", "do"], answer: "What do you do", difficulty: "medium" },
-        { words: ["bugs", "fixes", "She", "every", "day"], answer: "She fixes bugs every day", difficulty: "hard" }
+        { words: ["faster", "laptop", "My", "yours", "is", "than"], answer: "My laptop is faster than yours", difficulty: "medium" },
+        { words: ["more", "is", "MacBook", "The", "expensive", "this", "than", "one"], answer: "The MacBook is more expensive than this one", difficulty: "hard" }
       ],
       matching: [
         {
           difficulty: "medium",
           pairs: [
-            { en: "teacher", vi: "giáo viên" },
-            { en: "designer", vi: "nhà thiết kế" },
-            { en: "manager", vi: "quản lý" },
-            { en: "tester", vi: "người kiểm thử phần mềm" },
-            { en: "engineer", vi: "kỹ sư" }
+            { en: "bigger", vi: "lớn hơn" },
+            { en: "cheaper", vi: "rẻ hơn" },
+            { en: "more expensive", vi: "đắt hơn" },
+            { en: "better", vi: "tốt hơn" },
+            { en: "worse", vi: "tệ hơn" }
           ]
         }
       ]

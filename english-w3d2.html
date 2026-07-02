@@ -195,78 +195,80 @@
   // Mọi trường text dài (explanation, note, memoryTip, dialogue.vi) hỗ trợ markdown:
   // **đậm**, *nghiêng*, `code`. difficulty nhận "easy" | "medium" | "hard".
   const lessonData = {
-    week: 2,
+    week: 3,
     day: 2,
-    title: "Nghề nghiệp & Hiện tại đơn",
-    titleEn: "Jobs & Present Simple",
+    title: "There is / There are",
+    titleEn: "Describing Rooms & Spaces",
 
     vocab: [
-      { en: "What do you do?", ipa: "/wʌt duː juː duː/", vi: "Bạn làm nghề gì?", example: "**What do you do?** — I am a developer." },
-      { en: "teacher", ipa: "/ˈtiːtʃər/", vi: "giáo viên", example: "She is a **teacher**." },
-      { en: "designer", ipa: "/dɪˈzaɪnər/", vi: "nhà thiết kế", example: "My sister is a **designer**." },
-      { en: "manager", ipa: "/ˈmænɪdʒər/", vi: "quản lý", example: "He is a **manager**." },
-      { en: "tester", ipa: "/ˈtestər/", vi: "người kiểm thử phần mềm", example: "She works as a **tester**." },
-      { en: "engineer", ipa: "/ˌendʒɪˈnɪr/", vi: "kỹ sư", example: "He is a software **engineer**." },
-      { en: "doctor", ipa: "/ˈdɑːktər/", vi: "bác sĩ", example: "My mother is a **doctor**." },
-      { en: "every day", ipa: "/ˈevri deɪ/", vi: "mỗi ngày", example: "I check email **every day**." },
-      { en: "usually", ipa: "/ˈjuːʒuəli/", vi: "thường thì", example: "I **usually** start work at 9 AM." },
-      { en: "code (to code)", ipa: "/koʊd/", vi: "viết mã / lập trình", example: "He **codes** every day." },
-      { en: "fix (to fix)", ipa: "/fɪks/", vi: "sửa (lỗi)", example: "She **fixes** bugs every day." },
-      { en: "meeting", ipa: "/ˈmiːtɪŋ/", vi: "cuộc họp", example: "We have a **meeting** every morning." }
+      { en: "There is...", ipa: "/ðer ɪz/", vi: "Có (một)... (số ít)", example: "**There is** a laptop on the desk." },
+      { en: "There are...", ipa: "/ðer ɑːr/", vi: "Có (nhiều)... (số nhiều)", example: "**There are** two monitors here." },
+      { en: "There isn't...", ipa: "/ðer ˈɪzənt/", vi: "Không có ... (số ít)", example: "**There isn't** a printer in the room." },
+      { en: "There aren't...", ipa: "/ðer ɑːrnt/", vi: "Không có ... (số nhiều)", example: "**There aren't** any chairs here." },
+      { en: "Is there...?", ipa: "/ɪz ðer/", vi: "Có ... không? (số ít)", example: "**Is there** a meeting room?" },
+      { en: "Are there...?", ipa: "/ɑːr ðer/", vi: "Có ... không? (số nhiều)", example: "**Are there** any desks available?" },
+      { en: "on", ipa: "/ɑːn/", vi: "trên (bề mặt)", example: "The laptop is **on** the desk." },
+      { en: "in", ipa: "/ɪn/", vi: "trong (bên trong)", example: "There is a printer **in** the room." },
+      { en: "next to", ipa: "/nekst tuː/", vi: "bên cạnh", example: "The chair is **next to** the desk." },
+      { en: "near", ipa: "/nɪr/", vi: "gần", example: "The office is **near** the elevator." },
+      { en: "printer", ipa: "/ˈprɪntər/", vi: "máy in", example: "**There is** a printer next to the door." },
+      { en: "projector", ipa: "/prəˈdʒektər/", vi: "máy chiếu", example: "**There is** a projector in the meeting room." },
+      { en: "window", ipa: "/ˈwɪndoʊ/", vi: "cửa sổ", example: "**There are** two windows in this room." },
+      { en: "door", ipa: "/dɔːr/", vi: "cửa ra vào", example: "The printer is near the **door**." }
     ],
 
     grammar: {
-      point: "Hiện tại đơn (thói quen): thêm s/es với chủ ngữ ngôi thứ 3 số ít",
-      explanation: "Hiện tại đơn diễn tả thói quen, công việc lặp lại hàng ngày. Với **I/You/We/They**, giữ nguyên động từ: `I code every day`. Với **He/She/It** (ngôi 3 số ít), động từ phải thêm `s` hoặc `es`: `He codes every day`, `She fixes bugs`. Động từ tận cùng bằng `-s, -x, -ch, -sh, -o` thì thêm `es` (vd: `fix → fixes`).",
-      examples: ["I **code** every day.", "She **fixes** bugs every day.", "He **usually** starts work at 9 AM."],
+      point: "There is / There are: diễn tả sự tồn tại của vật",
+      explanation: "Dùng `There is` (+ danh từ **số ít**) và `There are` (+ danh từ **số nhiều**) để nói 'có cái gì đó ở đâu đó'. Phủ định: `There isn't` / `There aren't`. Câu hỏi: `Is there...?` / `Are there...?`. Thường kết hợp với giới từ chỉ nơi chốn như `on/in/next to/near` để nói rõ ở đâu.",
+      examples: ["**There is** a projector **in** the meeting room.", "**There are** two windows **next to** the door.", "**Is there** a printer here? — Yes, there is."],
       commonMistake: {
-        wrong: "She fix bugs every day.",
-        right: "She fixes bugs every day.",
-        note: "Tiếng Việt không chia động từ theo chủ ngữ (\"cô ấy sửa\" và \"tôi sửa\" dùng chung động từ \"sửa\"), nên người học hay quên thêm `s/es` khi chủ ngữ là he/she/it. Đây là lỗi phổ biến thứ 2 sau lỗi quên TO BE."
+        wrong: "There are a laptop on the desk.",
+        right: "There is a laptop on the desk.",
+        note: "Người học hay dùng `are` cho mọi trường hợp vì trong tiếng Việt 'có' không chia theo số ít/nhiều. Kiểm tra nhanh: đếm danh từ sau `there is/are` — **1 cái** → `is`, **2 cái trở lên** → `are`."
       },
-      memoryTip: "Quy tắc 'ngôi 3 số ít thêm S' — hễ thấy **he/she/it** hoặc tên một người/vật duy nhất làm chủ ngữ, kiểm tra ngay xem động từ đã có `s/es` chưa."
+      memoryTip: "Đếm trước, chọn sau: **1 → There IS**, **nhiều → There ARE** — giống hệt quy tắc chọn is/are cho chủ ngữ bình thường."
     },
 
     dialogue: {
-      titleVi: "Tình huống: hỏi thăm công việc hàng ngày",
+      titleVi: "Tình huống: tìm phòng họp và hỏi về cơ sở vật chất",
       lines: [
-        { speaker: "A", en: "What do you do?", vi: "Bạn làm nghề gì?" },
-        { speaker: "B", en: "I am a developer. I code every day.", vi: "Tôi là lập trình viên. Tôi viết mã mỗi ngày." },
-        { speaker: "A", en: "What does your sister do?", vi: "Em gái bạn làm nghề gì?" },
-        { speaker: "B", en: "She is a tester. She fixes bugs and checks the app every day.", vi: "Cô ấy là tester. Cô ấy sửa lỗi và kiểm tra ứng dụng mỗi ngày." }
+        { speaker: "A", en: "Excuse me, is there a meeting room on this floor?", vi: "Xin lỗi, tầng này có phòng họp không?" },
+        { speaker: "B", en: "Yes, there is. It's next to the printer.", vi: "Có. Phòng họp ở cạnh máy in." },
+        { speaker: "A", en: "Is there a projector in the room?", vi: "Trong phòng có máy chiếu không?" },
+        { speaker: "B", en: "Yes, there is a projector and there are two screens too.", vi: "Có, có một máy chiếu và cũng có hai màn hình nữa." }
       ]
     },
 
     exercises: {
       multipleChoice: [
-        { q: "I ___ every day.", options: ["code", "codes", "coding"], answer: "code", difficulty: "easy" },
-        { q: "She ___ bugs every day.", options: ["fix", "fixes", "fixing"], answer: "fixes", difficulty: "medium" },
-        { q: "He ___ work at 9 AM, and they ___ at 10 AM.", options: ["starts / start", "start / starts", "starts / starts"], answer: "starts / start", difficulty: "hard" },
-        { q: "Cách hỏi nghề nghiệp đúng là gì?", options: ["What you do?", "What do you do?", "What does you do?"], answer: "What do you do?", difficulty: "medium" },
-        { q: "That is ___ laptop. (của anh ấy, ôn lại Ngày 1)", options: ["he", "his", "him"], answer: "his", difficulty: "easy" }
+        { q: "___ a laptop on the desk.", options: ["There is", "There are", "There be"], answer: "There is", difficulty: "easy" },
+        { q: "___ two monitors here.", options: ["There is", "There are", "Is there"], answer: "There are", difficulty: "easy" },
+        { q: "___ a printer in this room? — No, there isn't.", options: ["Is there", "Are there", "There is"], answer: "Is there", difficulty: "medium" },
+        { q: "The chair is ___ the desk. (bên cạnh)", options: ["on", "in", "next to"], answer: "next to", difficulty: "medium" },
+        { q: "Mạo từ nào dùng trước 'office'? (ôn lại Ngày 1)", options: ["a", "an", "the"], answer: "an", difficulty: "easy" }
       ],
       trueFalse: [
-        { statement: "Với chủ ngữ `she`, động từ `fix` phải đổi thành `fixes`.", isTrue: true, difficulty: "easy" },
-        { statement: "Câu `He code every day` viết đúng ngữ pháp.", isTrue: false, difficulty: "medium" },
-        { statement: "`Tester` là người kiểm thử phần mềm.", isTrue: true, difficulty: "easy" }
+        { statement: "`There are` dùng với danh từ số nhiều.", isTrue: true, difficulty: "easy" },
+        { statement: "Câu `There are a laptop on the desk` viết đúng ngữ pháp.", isTrue: false, difficulty: "medium" },
+        { statement: "`Is there...?` là dạng câu hỏi của `There is...`.", isTrue: true, difficulty: "medium" }
       ],
       fillBlank: [
-        { sentence: "He ___ every day. (code)", answer: "codes", hint: "ngôi 3 số ít, thêm s", difficulty: "medium" },
-        { sentence: "I ___ work at 9 AM. (start)", answer: "start", hint: "chủ ngữ I, giữ nguyên", difficulty: "easy" }
+        { sentence: "___ two windows in this room.", answer: "There are", hint: "số nhiều (two)", difficulty: "easy" },
+        { sentence: "The printer is ___ the door. (gần)", answer: "near", hint: "giới từ chỉ vị trí", difficulty: "medium" }
       ],
       sentenceBuild: [
-        { words: ["do", "What", "you", "do"], answer: "What do you do", difficulty: "medium" },
-        { words: ["bugs", "fixes", "She", "every", "day"], answer: "She fixes bugs every day", difficulty: "hard" }
+        { words: ["is", "a", "projector", "There", "room", "the", "in"], answer: "There is a projector in the room", difficulty: "medium" },
+        { words: ["there", "a", "meeting", "room", "Is", "floor", "this", "on"], answer: "Is there a meeting room on this floor", difficulty: "hard" }
       ],
       matching: [
         {
-          difficulty: "medium",
+          difficulty: "easy",
           pairs: [
-            { en: "teacher", vi: "giáo viên" },
-            { en: "designer", vi: "nhà thiết kế" },
-            { en: "manager", vi: "quản lý" },
-            { en: "tester", vi: "người kiểm thử phần mềm" },
-            { en: "engineer", vi: "kỹ sư" }
+            { en: "on", vi: "trên (bề mặt)" },
+            { en: "in", vi: "trong (bên trong)" },
+            { en: "next to", vi: "bên cạnh" },
+            { en: "near", vi: "gần" },
+            { en: "printer", vi: "máy in" }
           ]
         }
       ]
