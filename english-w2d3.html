@@ -173,6 +173,20 @@
   .eng-btn.ghost { background: rgba(217,122,82,0.12); color: var(--accent); padding: 6px 14px; font-size: 12px; }
   .eng-result { margin-top: 14px; padding: 14px; border-radius: 12px; background: var(--good-bg); font-size: 14px; display:none; font-weight:600; }
   .eng-tip { font-size: 12px; color: var(--ink-soft); text-align:center; margin-top: 6px; }
+
+  .eng-nav {
+    display:flex; justify-content:space-between; align-items:center; gap:10px;
+    margin-top: 12px; flex-wrap: wrap;
+  }
+  .eng-nav-link {
+    display:inline-flex; align-items:center; justify-content:center; gap:6px;
+    min-width: 118px; border-radius: 12px; padding: 10px 16px;
+    background: rgba(217,122,82,0.12); color: var(--accent); text-decoration:none;
+    font-size: 13px; font-weight: 700; border: 1px solid rgba(217,122,82,0.18);
+  }
+  .eng-nav-link:hover { background: rgba(217,122,82,0.2); }
+  .eng-nav-link.primary { background: var(--accent); color: #fff; }
+  .eng-nav-link.primary:hover { opacity: 0.92; }
 </style>
 <script>
 (function(){
@@ -407,6 +421,29 @@
     return s.toLowerCase().replace(/[.?!,]/g, "").trim().replace(/\s+/g, " ");
   }
 
+
+  function lessonPath(week, day) {
+    return `english-w${week}d${day}.html`;
+  }
+
+  function navHtml() {
+    const day = lessonData.day;
+    const week = lessonData.week;
+    const prevWeek = day === 1 ? week - 1 : week;
+    const prevDay = day === 1 ? 7 : day - 1;
+    const nextWeek = day === 7 ? week + 1 : week;
+    const nextDay = day === 7 ? 1 : day + 1;
+    const prevHref = week === 1 && day === 1 ? "index.html" : lessonPath(prevWeek, prevDay);
+    const nextHref = week === 3 && day === 7 ? "index.html" : lessonPath(nextWeek, nextDay);
+    const nextLabel = week === 3 && day === 7 ? "Về trang chủ" : "Next →";
+
+    return `<div class="eng-nav">
+      <a class="eng-nav-link" href="${prevHref}">← Back</a>
+      <a class="eng-nav-link" href="index.html">Trang chủ</a>
+      <a class="eng-nav-link primary" href="${nextHref}">${nextLabel}</a>
+    </div>`;
+  }
+
   function render(streak, completedCount) {
     const ex = lessonData.exercises;
 
@@ -465,7 +502,7 @@
         <div class="eng-result" id="eng-result"></div>
       </div>
 
-      <p class="eng-tip">Học xong, quay lại chat và nói với Claude: "Hôm nay học tiếp ngày ${lessonData.day + 1}" để tiếp tục lộ trình.</p>
+      ${navHtml()}
     `;
 
     app.querySelectorAll("[data-speak]").forEach(btn => {

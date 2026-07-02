@@ -195,78 +195,80 @@
   // Mọi trường text dài (explanation, note, memoryTip, dialogue.vi) hỗ trợ markdown:
   // **đậm**, *nghiêng*, `code`. difficulty nhận "easy" | "medium" | "hard".
   const lessonData = {
-    week: 2,
-    day: 2,
-    title: "Nghề nghiệp & Hiện tại đơn",
-    titleEn: "Jobs & Present Simple",
+    week: 3,
+    day: 1,
+    title: "Mạo từ a / an / the & Màu sắc",
+    titleEn: "Articles a/an/the & Colors",
 
     vocab: [
-      { en: "What do you do?", ipa: "/wʌt duː juː duː/", vi: "Bạn làm nghề gì?", example: "**What do you do?** — I am a developer." },
-      { en: "teacher", ipa: "/ˈtiːtʃər/", vi: "giáo viên", example: "She is a **teacher**." },
-      { en: "designer", ipa: "/dɪˈzaɪnər/", vi: "nhà thiết kế", example: "My sister is a **designer**." },
-      { en: "manager", ipa: "/ˈmænɪdʒər/", vi: "quản lý", example: "He is a **manager**." },
-      { en: "tester", ipa: "/ˈtestər/", vi: "người kiểm thử phần mềm", example: "She works as a **tester**." },
-      { en: "engineer", ipa: "/ˌendʒɪˈnɪr/", vi: "kỹ sư", example: "He is a software **engineer**." },
-      { en: "doctor", ipa: "/ˈdɑːktər/", vi: "bác sĩ", example: "My mother is a **doctor**." },
-      { en: "every day", ipa: "/ˈevri deɪ/", vi: "mỗi ngày", example: "I check email **every day**." },
-      { en: "usually", ipa: "/ˈjuːʒuəli/", vi: "thường thì", example: "I **usually** start work at 9 AM." },
-      { en: "code (to code)", ipa: "/koʊd/", vi: "viết mã / lập trình", example: "He **codes** every day." },
-      { en: "fix (to fix)", ipa: "/fɪks/", vi: "sửa (lỗi)", example: "She **fixes** bugs every day." },
-      { en: "meeting", ipa: "/ˈmiːtɪŋ/", vi: "cuộc họp", example: "We have a **meeting** every morning." }
+      { en: "a", ipa: "/ə/", vi: "một (trước phụ âm, lần đầu nhắc đến)", example: "I have **a** laptop." },
+      { en: "an", ipa: "/æn/", vi: "một (trước nguyên âm a/e/i/o/u)", example: "She has **an** office." },
+      { en: "the", ipa: "/ðə/ /ðiː/", vi: "cái này/đó (đã biết, duy nhất)", example: "The laptop is new." },
+      { en: "red", ipa: "/red/", vi: "màu đỏ", example: "My bag is **red**." },
+      { en: "blue", ipa: "/bluː/", vi: "màu xanh dương", example: "The sky is **blue**." },
+      { en: "green", ipa: "/ɡriːn/", vi: "màu xanh lá", example: "That is a **green** chair." },
+      { en: "yellow", ipa: "/ˈjeloʊ/", vi: "màu vàng", example: "She has a **yellow** notebook." },
+      { en: "black", ipa: "/blæk/", vi: "màu đen", example: "My keyboard is **black**." },
+      { en: "white", ipa: "/waɪt/", vi: "màu trắng", example: "The walls are **white**." },
+      { en: "grey", ipa: "/ɡreɪ/", vi: "màu xám", example: "His laptop is **grey**." },
+      { en: "notebook", ipa: "/ˈnoʊtbʊk/", vi: "quyển vở / notebook", example: "She has a **notebook** on her desk." },
+      { en: "bag", ipa: "/bæɡ/", vi: "túi / cặp", example: "My **bag** is red." },
+      { en: "pen", ipa: "/pen/", vi: "bút bi", example: "There is a **pen** on the desk." },
+      { en: "wall", ipa: "/wɔːl/", vi: "bức tường", example: "The **walls** are white." }
     ],
 
     grammar: {
-      point: "Hiện tại đơn (thói quen): thêm s/es với chủ ngữ ngôi thứ 3 số ít",
-      explanation: "Hiện tại đơn diễn tả thói quen, công việc lặp lại hàng ngày. Với **I/You/We/They**, giữ nguyên động từ: `I code every day`. Với **He/She/It** (ngôi 3 số ít), động từ phải thêm `s` hoặc `es`: `He codes every day`, `She fixes bugs`. Động từ tận cùng bằng `-s, -x, -ch, -sh, -o` thì thêm `es` (vd: `fix → fixes`).",
-      examples: ["I **code** every day.", "She **fixes** bugs every day.", "He **usually** starts work at 9 AM."],
+      point: "Mạo từ: a / an / the",
+      explanation: "Dùng **`a`** (trước phụ âm) hoặc **`an`** (trước nguyên âm a/e/i/o/u) khi nhắc đến danh từ **lần đầu**, hoặc khi nói đến **một** trong số nhiều cái chung chung: `I have a laptop`, `She has an office`. Dùng **`the`** khi đã nhắc đến trước đó hoặc cả hai người biết đang nói đến cái nào: `The laptop is new` (laptop vừa nhắc ở câu trước), `the sun`, `the office` (chỉ có 1 cái đó thôi). Màu sắc đứng **trước danh từ** như tính từ: `a red bag`, `a black keyboard`.",
+      examples: ["I have **a** laptop. **The** laptop is grey.", "She has **an** office on the second floor.", "My keyboard is **black**, and the screen is **white**."],
       commonMistake: {
-        wrong: "She fix bugs every day.",
-        right: "She fixes bugs every day.",
-        note: "Tiếng Việt không chia động từ theo chủ ngữ (\"cô ấy sửa\" và \"tôi sửa\" dùng chung động từ \"sửa\"), nên người học hay quên thêm `s/es` khi chủ ngữ là he/she/it. Đây là lỗi phổ biến thứ 2 sau lỗi quên TO BE."
+        wrong: "She has a office.",
+        right: "She has an office.",
+        note: "Người Việt hay quên đổi `a` thành `an` khi từ tiếp theo bắt đầu bằng nguyên âm — vì tiếng Việt không có mạo từ. Mẹo kiểm tra: đọc to lên, nếu phát âm bị vấp (`a office`) thì cần `an`."
       },
-      memoryTip: "Quy tắc 'ngôi 3 số ít thêm S' — hễ thấy **he/she/it** hoặc tên một người/vật duy nhất làm chủ ngữ, kiểm tra ngay xem động từ đã có `s/es` chưa."
+      memoryTip: "Quy tắc tai nghe: **a** trước âm phụ âm (b, c, d, f...), **an** trước âm nguyên âm (a, e, i, o, u) — thử đọc to để cảm nhận tự nhiên."
     },
 
     dialogue: {
-      titleVi: "Tình huống: hỏi thăm công việc hàng ngày",
+      titleVi: "Tình huống: mô tả không gian làm việc mới",
       lines: [
-        { speaker: "A", en: "What do you do?", vi: "Bạn làm nghề gì?" },
-        { speaker: "B", en: "I am a developer. I code every day.", vi: "Tôi là lập trình viên. Tôi viết mã mỗi ngày." },
-        { speaker: "A", en: "What does your sister do?", vi: "Em gái bạn làm nghề gì?" },
-        { speaker: "B", en: "She is a tester. She fixes bugs and checks the app every day.", vi: "Cô ấy là tester. Cô ấy sửa lỗi và kiểm tra ứng dụng mỗi ngày." }
+        { speaker: "A", en: "Do you have a big office?", vi: "Bạn có văn phòng rộng không?" },
+        { speaker: "B", en: "Yes, it's an open office with white walls and grey desks.", vi: "Có, đó là văn phòng mở với tường trắng và bàn màu xám." },
+        { speaker: "A", en: "What colour is your chair?", vi: "Ghế của bạn màu gì?" },
+        { speaker: "B", en: "The chair is black, but I want a green one!", vi: "Ghế màu đen, nhưng tôi muốn một cái màu xanh lá!" }
       ]
     },
 
     exercises: {
       multipleChoice: [
-        { q: "I ___ every day.", options: ["code", "codes", "coding"], answer: "code", difficulty: "easy" },
-        { q: "She ___ bugs every day.", options: ["fix", "fixes", "fixing"], answer: "fixes", difficulty: "medium" },
-        { q: "He ___ work at 9 AM, and they ___ at 10 AM.", options: ["starts / start", "start / starts", "starts / starts"], answer: "starts / start", difficulty: "hard" },
-        { q: "Cách hỏi nghề nghiệp đúng là gì?", options: ["What you do?", "What do you do?", "What does you do?"], answer: "What do you do?", difficulty: "medium" },
-        { q: "That is ___ laptop. (của anh ấy, ôn lại Ngày 1)", options: ["he", "his", "him"], answer: "his", difficulty: "easy" }
+        { q: "I have ___ laptop.", options: ["a", "an", "the"], answer: "a", difficulty: "easy" },
+        { q: "She has ___ office on this floor.", options: ["a", "an", "the"], answer: "an", difficulty: "medium" },
+        { q: "The ___ is on the desk. (bút bi)", options: ["pen", "bag", "wall"], answer: "pen", difficulty: "easy" },
+        { q: "I saw a red bag. ___ bag is very big.", options: ["A", "An", "The"], answer: "The", difficulty: "hard" },
+        { q: "Liên từ nào dùng để nối 2 ý trái ngược? (ôn lại T2 Ngày 6)", options: ["and", "but", "so"], answer: "but", difficulty: "easy" }
       ],
       trueFalse: [
-        { statement: "Với chủ ngữ `she`, động từ `fix` phải đổi thành `fixes`.", isTrue: true, difficulty: "easy" },
-        { statement: "Câu `He code every day` viết đúng ngữ pháp.", isTrue: false, difficulty: "medium" },
-        { statement: "`Tester` là người kiểm thử phần mềm.", isTrue: true, difficulty: "easy" }
+        { statement: "`An` dùng trước từ bắt đầu bằng nguyên âm như 'office'.", isTrue: true, difficulty: "easy" },
+        { statement: "Câu `She has a office` viết đúng ngữ pháp.", isTrue: false, difficulty: "medium" },
+        { statement: "Màu sắc đứng **trước** danh từ trong tiếng Anh (`a red bag`).", isTrue: true, difficulty: "medium" }
       ],
       fillBlank: [
-        { sentence: "He ___ every day. (code)", answer: "codes", hint: "ngôi 3 số ít, thêm s", difficulty: "medium" },
-        { sentence: "I ___ work at 9 AM. (start)", answer: "start", hint: "chủ ngữ I, giữ nguyên", difficulty: "easy" }
+        { sentence: "She has ___ orange notebook. (một quyển)", answer: "an", hint: "nguyên âm 'o' → a hay an?", difficulty: "medium" },
+        { sentence: "My keyboard is ___ . (màu đen)", answer: "black", hint: "tính từ màu sắc", difficulty: "easy" }
       ],
       sentenceBuild: [
-        { words: ["do", "What", "you", "do"], answer: "What do you do", difficulty: "medium" },
-        { words: ["bugs", "fixes", "She", "every", "day"], answer: "She fixes bugs every day", difficulty: "hard" }
+        { words: ["a", "I", "grey", "have", "laptop"], answer: "I have a grey laptop", difficulty: "medium" },
+        { words: ["white", "The", "are", "walls"], answer: "The walls are white", difficulty: "medium" }
       ],
       matching: [
         {
-          difficulty: "medium",
+          difficulty: "easy",
           pairs: [
-            { en: "teacher", vi: "giáo viên" },
-            { en: "designer", vi: "nhà thiết kế" },
-            { en: "manager", vi: "quản lý" },
-            { en: "tester", vi: "người kiểm thử phần mềm" },
-            { en: "engineer", vi: "kỹ sư" }
+            { en: "red", vi: "đỏ" },
+            { en: "blue", vi: "xanh dương" },
+            { en: "green", vi: "xanh lá" },
+            { en: "black", vi: "đen" },
+            { en: "white", vi: "trắng" }
           ]
         }
       ]

@@ -195,78 +195,80 @@
   // Mọi trường text dài (explanation, note, memoryTip, dialogue.vi) hỗ trợ markdown:
   // **đậm**, *nghiêng*, `code`. difficulty nhận "easy" | "medium" | "hard".
   const lessonData = {
-    week: 2,
-    day: 2,
-    title: "Nghề nghiệp & Hiện tại đơn",
-    titleEn: "Jobs & Present Simple",
+    week: 3,
+    day: 4,
+    title: "Đếm được & Không đếm được",
+    titleEn: "Countable & Uncountable Nouns",
 
     vocab: [
-      { en: "What do you do?", ipa: "/wʌt duː juː duː/", vi: "Bạn làm nghề gì?", example: "**What do you do?** — I am a developer." },
-      { en: "teacher", ipa: "/ˈtiːtʃər/", vi: "giáo viên", example: "She is a **teacher**." },
-      { en: "designer", ipa: "/dɪˈzaɪnər/", vi: "nhà thiết kế", example: "My sister is a **designer**." },
-      { en: "manager", ipa: "/ˈmænɪdʒər/", vi: "quản lý", example: "He is a **manager**." },
-      { en: "tester", ipa: "/ˈtestər/", vi: "người kiểm thử phần mềm", example: "She works as a **tester**." },
-      { en: "engineer", ipa: "/ˌendʒɪˈnɪr/", vi: "kỹ sư", example: "He is a software **engineer**." },
-      { en: "doctor", ipa: "/ˈdɑːktər/", vi: "bác sĩ", example: "My mother is a **doctor**." },
-      { en: "every day", ipa: "/ˈevri deɪ/", vi: "mỗi ngày", example: "I check email **every day**." },
-      { en: "usually", ipa: "/ˈjuːʒuəli/", vi: "thường thì", example: "I **usually** start work at 9 AM." },
-      { en: "code (to code)", ipa: "/koʊd/", vi: "viết mã / lập trình", example: "He **codes** every day." },
-      { en: "fix (to fix)", ipa: "/fɪks/", vi: "sửa (lỗi)", example: "She **fixes** bugs every day." },
-      { en: "meeting", ipa: "/ˈmiːtɪŋ/", vi: "cuộc họp", example: "We have a **meeting** every morning." }
+      { en: "countable noun", ipa: "/ˈkaʊntəbl naʊn/", vi: "danh từ đếm được (có số ít/nhiều)", example: "A **laptop**, two **chairs**, three **bugs**." },
+      { en: "uncountable noun", ipa: "/ʌnˈkaʊntəbl naʊn/", vi: "danh từ không đếm được (không có số nhiều)", example: "**Water**, **money**, **information**." },
+      { en: "some", ipa: "/sʌm/", vi: "một số / một ít (câu khẳng định)", example: "I have **some** coffee." },
+      { en: "any", ipa: "/ˈeni/", vi: "không có / nào đó (phủ định & câu hỏi)", example: "Do you have **any** water?" },
+      { en: "water", ipa: "/ˈwɔːtər/", vi: "nước", example: "Is there **any** water?" },
+      { en: "coffee", ipa: "/ˈkɔːfi/", vi: "cà phê", example: "I have **some** coffee on my desk." },
+      { en: "money", ipa: "/ˈmʌni/", vi: "tiền", example: "I don't have **any** money." },
+      { en: "information", ipa: "/ˌɪnfərˈmeɪʃən/", vi: "thông tin", example: "Do you have **any** information about this bug?" },
+      { en: "time", ipa: "/taɪm/", vi: "thời gian", example: "I don't have **any** time today." },
+      { en: "feedback", ipa: "/ˈfiːdbæk/", vi: "phản hồi", example: "Do you have **any** feedback on my code?" },
+      { en: "bug", ipa: "/bʌɡ/", vi: "lỗi phần mềm", example: "There are **some** bugs in this code." },
+      { en: "idea", ipa: "/aɪˈdiːə/", vi: "ý tưởng", example: "Do you have **any** ideas?" },
+      { en: "How much", ipa: "/haʊ mʌtʃ/", vi: "bao nhiêu (không đếm được)", example: "**How much** water do you drink a day?" },
+      { en: "How many", ipa: "/haʊ ˈmeni/", vi: "bao nhiêu (đếm được)", example: "**How many** bugs are there?" }
     ],
 
     grammar: {
-      point: "Hiện tại đơn (thói quen): thêm s/es với chủ ngữ ngôi thứ 3 số ít",
-      explanation: "Hiện tại đơn diễn tả thói quen, công việc lặp lại hàng ngày. Với **I/You/We/They**, giữ nguyên động từ: `I code every day`. Với **He/She/It** (ngôi 3 số ít), động từ phải thêm `s` hoặc `es`: `He codes every day`, `She fixes bugs`. Động từ tận cùng bằng `-s, -x, -ch, -sh, -o` thì thêm `es` (vd: `fix → fixes`).",
-      examples: ["I **code** every day.", "She **fixes** bugs every day.", "He **usually** starts work at 9 AM."],
+      point: "Danh từ đếm được / không đếm được + some / any",
+      explanation: "**Danh từ đếm được** có dạng số nhiều (thêm `s/es`): `a bug → bugs`, `a chair → chairs`. **Danh từ không đếm được** không có dạng số nhiều, không dùng `a/an`: `water`, `money`, `information`, `time`, `feedback`. Dùng **`some`** trong câu **khẳng định**: `I have some coffee`. Dùng **`any`** trong câu **phủ định** và câu **hỏi**: `I don't have any time`, `Do you have any feedback?`",
+      examples: ["I have **some** bugs to fix.", "Do you have **any** information?", "**How many** bugs are there? — **How much** time do we have?"],
       commonMistake: {
-        wrong: "She fix bugs every day.",
-        right: "She fixes bugs every day.",
-        note: "Tiếng Việt không chia động từ theo chủ ngữ (\"cô ấy sửa\" và \"tôi sửa\" dùng chung động từ \"sửa\"), nên người học hay quên thêm `s/es` khi chủ ngữ là he/she/it. Đây là lỗi phổ biến thứ 2 sau lỗi quên TO BE."
+        wrong: "I have some informations.",
+        right: "I have some information.",
+        note: "Tiếng Việt có thể nói 'những thông tin' (số nhiều), nhưng `information` trong tiếng Anh là danh từ **không đếm được** — không bao giờ thêm `s`. Tương tự: `feedback`, `money`, `water`, `time` đều không có dạng số nhiều."
       },
-      memoryTip: "Quy tắc 'ngôi 3 số ít thêm S' — hễ thấy **he/she/it** hoặc tên một người/vật duy nhất làm chủ ngữ, kiểm tra ngay xem động từ đã có `s/es` chưa."
+      memoryTip: "Thử hỏi: có thể đếm từng cái riêng lẻ được không? **Bugs** → đếm được (1 bug, 2 bugs). **Information** → không đếm được (không nói '1 information'). Không đếm được → không thêm `s`, không dùng `a/an`."
     },
 
     dialogue: {
-      titleVi: "Tình huống: hỏi thăm công việc hàng ngày",
+      titleVi: "Tình huống: xin thông tin và feedback về code",
       lines: [
-        { speaker: "A", en: "What do you do?", vi: "Bạn làm nghề gì?" },
-        { speaker: "B", en: "I am a developer. I code every day.", vi: "Tôi là lập trình viên. Tôi viết mã mỗi ngày." },
-        { speaker: "A", en: "What does your sister do?", vi: "Em gái bạn làm nghề gì?" },
-        { speaker: "B", en: "She is a tester. She fixes bugs and checks the app every day.", vi: "Cô ấy là tester. Cô ấy sửa lỗi và kiểm tra ứng dụng mỗi ngày." }
+        { speaker: "A", en: "Do you have any feedback on my pull request?", vi: "Bạn có phản hồi nào về pull request của tôi không?" },
+        { speaker: "B", en: "Yes, I have some feedback. There are some bugs in the code.", vi: "Có, tôi có một ít phản hồi. Có một số lỗi trong code." },
+        { speaker: "A", en: "How many bugs are there?", vi: "Có bao nhiêu lỗi vậy?" },
+        { speaker: "B", en: "There are three bugs. But I don't have any time to fix them today.", vi: "Có ba lỗi. Nhưng hôm nay tôi không có thời gian để sửa chúng." }
       ]
     },
 
     exercises: {
       multipleChoice: [
-        { q: "I ___ every day.", options: ["code", "codes", "coding"], answer: "code", difficulty: "easy" },
-        { q: "She ___ bugs every day.", options: ["fix", "fixes", "fixing"], answer: "fixes", difficulty: "medium" },
-        { q: "He ___ work at 9 AM, and they ___ at 10 AM.", options: ["starts / start", "start / starts", "starts / starts"], answer: "starts / start", difficulty: "hard" },
-        { q: "Cách hỏi nghề nghiệp đúng là gì?", options: ["What you do?", "What do you do?", "What does you do?"], answer: "What do you do?", difficulty: "medium" },
-        { q: "That is ___ laptop. (của anh ấy, ôn lại Ngày 1)", options: ["he", "his", "him"], answer: "his", difficulty: "easy" }
+        { q: "I have ___ coffee on my desk. (khẳng định)", options: ["some", "any", "a"], answer: "some", difficulty: "easy" },
+        { q: "Do you have ___ feedback? (câu hỏi)", options: ["some", "any", "a"], answer: "any", difficulty: "easy" },
+        { q: "I don't have ___ time today. (phủ định)", options: ["some", "any", "many"], answer: "any", difficulty: "medium" },
+        { q: "___ bugs are there? (câu hỏi, đếm được)", options: ["How much", "How many", "How some"], answer: "How many", difficulty: "medium" },
+        { q: "Từ nào có nghĩa là 'đối diện'? (ôn lại Ngày 3)", options: ["behind", "between", "opposite"], answer: "opposite", difficulty: "easy" }
       ],
       trueFalse: [
-        { statement: "Với chủ ngữ `she`, động từ `fix` phải đổi thành `fixes`.", isTrue: true, difficulty: "easy" },
-        { statement: "Câu `He code every day` viết đúng ngữ pháp.", isTrue: false, difficulty: "medium" },
-        { statement: "`Tester` là người kiểm thử phần mềm.", isTrue: true, difficulty: "easy" }
+        { statement: "`Information` là danh từ không đếm được — không thêm `s`.", isTrue: true, difficulty: "easy" },
+        { statement: "Câu `I have some informations` viết đúng ngữ pháp.", isTrue: false, difficulty: "medium" },
+        { statement: "`Some` dùng trong câu hỏi và phủ định, `any` dùng trong câu khẳng định.", isTrue: false, difficulty: "hard" }
       ],
       fillBlank: [
-        { sentence: "He ___ every day. (code)", answer: "codes", hint: "ngôi 3 số ít, thêm s", difficulty: "medium" },
-        { sentence: "I ___ work at 9 AM. (start)", answer: "start", hint: "chủ ngữ I, giữ nguyên", difficulty: "easy" }
+        { sentence: "Do you have ___ ideas? (câu hỏi)", answer: "any", hint: "some hay any?", difficulty: "easy" },
+        { sentence: "There are ___ bugs in this code. (một số)", answer: "some", hint: "khẳng định", difficulty: "easy" }
       ],
       sentenceBuild: [
-        { words: ["do", "What", "you", "do"], answer: "What do you do", difficulty: "medium" },
-        { words: ["bugs", "fixes", "She", "every", "day"], answer: "She fixes bugs every day", difficulty: "hard" }
+        { words: ["have", "I", "feedback", "some"], answer: "I have some feedback", difficulty: "medium" },
+        { words: ["bugs", "How", "are", "there", "many"], answer: "How many bugs are there", difficulty: "hard" }
       ],
       matching: [
         {
           difficulty: "medium",
           pairs: [
-            { en: "teacher", vi: "giáo viên" },
-            { en: "designer", vi: "nhà thiết kế" },
-            { en: "manager", vi: "quản lý" },
-            { en: "tester", vi: "người kiểm thử phần mềm" },
-            { en: "engineer", vi: "kỹ sư" }
+            { en: "water", vi: "không đếm được" },
+            { en: "bug", vi: "đếm được" },
+            { en: "information", vi: "không đếm được" },
+            { en: "idea", vi: "đếm được" },
+            { en: "feedback", vi: "không đếm được" }
           ]
         }
       ]
