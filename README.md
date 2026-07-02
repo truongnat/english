@@ -1,10 +1,10 @@
 # English Daily Coach 🎯
 
-**Luyện tập tiếng Anh mỗi ngày — 14 bài học tương tác cho người mới bắt đầu**
+**Luyện tập tiếng Anh mỗi ngày — 21 bài học tương tác cho người mới bắt đầu**
 
 ## 📖 About
 
-English Daily Coach là chương trình luyện tập tiếng Anh 14 ngày dành cho người mới bắt đầu, được thiết kế dưới dạng các trang HTML tương tác. Mỗi bài học bao gồm từ vựng, ngữ pháp, hội thoại thực tế và bài tập giúp bạn ghi nhớ sâu hơn thông qua các cơ chế:
+English Daily Coach là chương trình luyện tập tiếng Anh 21 ngày dành cho người mới bắt đầu, được thiết kế dưới dạng các trang HTML tương tác. Mỗi bài học bao gồm từ vựng, ngữ pháp, hội thoại thực tế và bài tập giúp bạn ghi nhớ sâu hơn thông qua các cơ chế:
 
 - 🃏 **Flashcard** — Học từ vựng kèm IPA và ví dụ, click để lật thẻ
 - 🎙️ **Phát âm** — Nghe phát âm chuẩn với Web Speech API
@@ -35,6 +35,18 @@ English Daily Coach là chương trình luyện tập tiếng Anh 14 ngày dành
 | 05 | Câu hỏi với Do / Does | Questions with Do / Does |
 | 06 | Ghép câu với And / But / So | Connecting Ideas: And / But / So |
 | 07 | Ôn tập tổng hợp Tuần 2 | Week 2 Review |
+
+## 📅 Nội dung Tuần 3
+
+| Day | Bài học | Mô tả |
+|-----|---------|-------|
+| 01 | Mạo từ a / an / the & Màu sắc | Articles a/an/the & Colors |
+| 02 | There is / There are | Describing Rooms & Spaces |
+| 03 | Hỏi đường & Chỉ đường | Asking & Giving Directions |
+| 04 | Đếm được & Không đếm được | Countable & Uncountable Nouns |
+| 05 | Mô tả ngôi nhà & Số nhiều bất quy tắc | Describing Your Home & Irregular Plurals |
+| 06 | So sánh hơn | Comparative Adjectives |
+| 07 | Ôn tập tổng hợp Tuần 3 | Week 3 Review |
 
 ## 🚀 Cách sử dụng
 
